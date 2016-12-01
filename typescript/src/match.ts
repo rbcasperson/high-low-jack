@@ -72,11 +72,22 @@ export class Match {
         })
     }
 
-    completeTrick(): void {
+    completeTrick(): string | null {
         let winner = tools.determineTrickWinner(this.trick.cardsPlayed, 
                                                 this.round.trumpSuit,
                                                 this.trick.leadSuit);
-        let winningTeam = tools.getTeamFromPlayer(this.teams, winner)
+        let winningTeam = this.players[winner].team;
+        
+        _.each(this.trick.cardsPlayed, card => {
+            this.teams[winningTeam].cardsWon.push(card)
+        });
+        this.trick.cardsPlayed = {};
+
+        if (this.trick.number < this.settings.cardsPerRound ) {
+            return winner
+        } else {
+            return null
+        }
               
     }
 }
