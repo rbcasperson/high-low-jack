@@ -82,6 +82,11 @@ export class Match {
         })
     }
 
+    playCard(playerName: string, cardName: string): void {
+        let cardBeingPlayed = this.players[playerName].removeCard(cardName);
+        this.trick.cardsPlayed[playerName] = cardBeingPlayed;
+    }
+
     completeTrick(): string | null {
         let winner = tools.determineTrickWinner(this.trick.cardsPlayed, 
                                                 this.round.trumpSuit,
