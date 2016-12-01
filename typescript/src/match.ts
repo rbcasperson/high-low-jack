@@ -10,6 +10,7 @@ interface TeamSettings {
 }
 
 interface Settings {
+    startingCardsPerPlayer: number,
     cardsPerRound: number
 }
 
@@ -51,6 +52,7 @@ export class Match {
     constructor(teamSettings: TeamSettings, settings?: Settings) {
         this.deck = new Deck();
         this.settings = settings || {
+            startingCardsPerPlayer: 6,
             cardsPerRound: 6
         };
         this.setUpTeamsAndPlayers(teamSettings);
@@ -80,6 +82,12 @@ export class Match {
                 this.players[playerName] = new Player(playerName, teamName)
             })
         })
+    }
+
+    deal(): void {
+        _.each(this.players, (player, playerName) => {
+            player.hand = this.deck.draw(this.settings.startingCardsPerPlayer);
+        });
     }
 
     playCard(playerName: string, cardName: string): void {

@@ -13,7 +13,27 @@ test.beforeEach(`create a new team`, t => {
     t.context.match = new Match(teamSettings);
 });
 
-test(`teams are created with players in each team`, t => {
+test(`default settings are applied by default`, t => {
+    t.is(t.context.match.settings.cardsPerRound, 6);
+});
+
+test(`settings can be customized`, t => {
+    let customSettings = {
+        startingCardsPerPlayer: 9,
+        cardsPerRound: 9
+    }
+    let match = new Match(t.context.teamSettings, customSettings)
+    t.is(match.settings.startingCardsPerPlayer, 9);
+    t.is(match.settings.cardsPerRound, 9);
+});
+
+test(`round and trick are initiated correctly`, t => {
+    t.is(t.context.match.round.number, 0);
+    t.is(t.context.match.trick.number, 0);
+    t.deepEqual(t.context.match.trick.cardsPlayed, {});
+});
+
+test(`teams are created with player names in each team`, t => {
     t.truthy(t.context.match.teams['The Knicks']);
     t.true(_.includes(t.context.match.teams['The Knicks'].players, 'Rajens Kaspersons'));
     t.truthy(t.context.match.teams['The Celtics']);
@@ -22,22 +42,31 @@ test(`teams are created with players in each team`, t => {
     t.false(_.includes(t.context.match.teams['The Celtics'].players, 'Michael Jordan'));
 });
 
-test(`default settings are applied by default`, t => {
-    t.is(t.context.match.settings.cardsPerRound, 6);
+test(`players are created`, t => {
+    t.truthy(t.context.match.players['Kristaps Porziņģis']);
+    t.is(t.context.match.players['Kristaps Porziņģis'].team, 'The Knicks');
+    t.truthy(t.context.match.players['Rajens Kaspersons']);
+    t.is(t.context.match.players['Rajens Kaspersons'].team, 'The Knicks');
+    t.truthy(t.context.match.players['Paul Pierce']);
+    t.is(t.context.match.players['Paul Pierce'].team, 'The Celtics');
+    t.truthy(t.context.match.players['Kevin Garnet']);
+    t.is(t.context.match.players['Kevin Garnet'].team, 'The Celtics');
 });
 
-test(`settings can be customized`, t => {
-    let customSettings = {
-        cardsPerRound: 9
-    }
-    let match = new Match(t.context.teamSettings, customSettings)
-    t.is(match.settings.cardsPerRound, 9);
+test(`cards can be dealt to each player`, t => {
+    t.context.match.deal();
+    _.each(t.context.match.players, (player, playerName) => {
+        t.is(player.hand.length, 6);
+    });
 });
 
-test(`round and trick are initiated correctly`, t => {
-    t.is(t.context.match.round.number, 0);
-    t.is(t.context.match.trick.number, 0);
-    t.deepEqual(t.context.match.trick.cardsPlayed, {});
+test(`a card can be played by a player`, t => {
+    let [fiveDiamonds, sixClubs] = t.context.match.deck.drawSpecificCards('5 of diamonds', '6 of clubs');
+    t.context.match.players['Kristaps Porziņģis'].hand = [fiveDiamonds, sixClubs];
+    t.context.match.playCard('Kristaps Porziņģis', '5 of diamonds');
+    t.deepEqual(t.context.match.players['Kristaps Porziņģis'].hand, [sixClubs]);
+    t.deepEqual(t.context.match.trick.cardsPlayed['Kristaps Porziņģis'], fiveDiamonds)
+
 });
 
 test(`trick is completed and the winning player is returned`, t => {
