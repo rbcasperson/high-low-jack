@@ -9,6 +9,10 @@ interface TeamSettings {
     [teamName: string]: string[]
 }
 
+interface Settings {
+    cardsPerRound: number
+}
+
 interface scores {
     [teamName: string]: number
 }
@@ -37,12 +41,16 @@ interface Trick {
 }
 
 export class Match {
+    settings: Settings
     teams: Teams = {}
     players: Players = {}
     round: Round
     trick: Trick
 
-    constructor(teamSettings: TeamSettings) {
+    constructor(teamSettings: TeamSettings, settings?: Settings) {
+        this.settings = settings || {
+            cardsPerRound: 6
+        };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
             number: 0,

@@ -9,6 +9,7 @@ test.beforeEach(`create a new team`, t => {
         'The Knicks': ['Kristaps Porziņģis', 'Rajens Kaspersons'],
         'The Celtics': ['Paul Pierce', 'Kevin Garnet']
     };
+    t.context.teamSettings = teamSettings;
     t.context.match = new Match(teamSettings);
 });
 
@@ -25,4 +26,16 @@ test(`round and trick are initiated correctly`, t => {
     t.is(t.context.match.round.number, 0);
     t.is(t.context.match.trick.number, 0);
     t.deepEqual(t.context.match.trick.cardsPlayed, {});
+});
+
+test(`default settings are applied by default`, t => {
+    t.is(t.context.match.settings.cardsPerRound, 6);
+});
+
+test(`settings can be customized`, t => {
+    let customSettings = {
+        cardsPerRound: 9
+    }
+    let match = new Match(t.context.teamSettings, customSettings)
+    t.is(match.settings.cardsPerRound, 9);
 });
