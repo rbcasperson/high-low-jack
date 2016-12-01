@@ -1,0 +1,36 @@
+{
+  "name": "hi-lo-jack",
+  "version": "0.0.1",
+  "description": "An engine for the card game `hi-lo-jack`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc && ava"
+  },
+  "dependencies": {
+    "lodash": "^4.17.2",
+    "typescript": "^2.0.10"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.39",
+    "@types/node": "^6.0.49",
+    "ava": "^0.17.0",
+    "webpack": "^1.13.3"
+  },
+  "ava": {
+    "files": [
+      "./compiled/tests/*.js"
+    ],
+    "failFast": true,
+    "tap": true
+  },
+  "keywords": [
+    "hi-lo-jack",
+    "high",
+    "low",
+    "jack",
+    "card",
+    "game"
+  ],
+  "author": "Ryan Casperson <casperson.ryan@gmail.com>",
+  "license": "MIT"
+}
