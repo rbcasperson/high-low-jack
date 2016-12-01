@@ -45,5 +45,5 @@ test(`team name can be determined from player name`, t => {
     let teams = {
 
     }
-    let teamName = tools.getTeamFromPlayer(teams, playerName)
+    //let teamName = tools.getTeamFromPlayer(teams, playerName)
 });

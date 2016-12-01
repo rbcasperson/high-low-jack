@@ -14,11 +14,11 @@ test.beforeEach(`create a new team`, t => {
 
 test(`teams are created with players in each team`, t => {
     t.truthy(t.context.match.teams['The Knicks']);
-    t.truthy(t.context.match.teams['The Knicks'].players['Rajens Kaspersons']);
+    t.true(_.includes(t.context.match.teams['The Knicks'].players, 'Rajens Kaspersons'));
     t.truthy(t.context.match.teams['The Celtics']);
-    t.truthy(t.context.match.teams['The Celtics'].players['Kevin Garnet']);
+    t.true(_.includes(t.context.match.teams['The Celtics'].players, 'Kevin Garnet'));
     t.falsy(t.context.match.teams['Not a team']);
-    t.falsy(t.context.match.teams['The Celtics'].players['Michael Jordan']);
+    t.false(_.includes(t.context.match.teams['The Celtics'].players, 'Michael Jordan'));
 });
 
 test(`round and trick are initiated correctly`, t => {

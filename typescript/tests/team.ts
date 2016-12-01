@@ -18,8 +18,8 @@ test(`a team name is assigned`, t => {
 });
 
 test(`players are assigned to the team`, t => {
-    t.truthy(t.context.team.players);
-    t.truthy(t.context.team.players['Kristaps Porziņģis']);
-    t.truthy(t.context.team.players['Rajens Kaspersons']);
-    t.falsy(t.context.team.players['Alexander Nevsky']);
+    t.deepEqual(t.context.team.players, ['Kristaps Porziņģis', 'Rajens Kaspersons']);
+    t.true(_.includes(t.context.team.players, 'Kristaps Porziņģis'));
+    t.true(_.includes(t.context.team.players, 'Rajens Kaspersons'));
+    t.false(_.includes(t.context.team.players, 'Alexander Nevsky'));
 });
