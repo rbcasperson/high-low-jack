@@ -40,10 +40,3 @@ test(`trick winner can be determined`, t => {
     t.is(winnerTrump, 'Player 1');
     t.is(winnerNoTrump, 'Player 2');
 });
-
-test(`team name can be determined from player name`, t => {
-    let teams = {
-
-    }
-    //let teamName = tools.getTeamFromPlayer(teams, playerName)
-});

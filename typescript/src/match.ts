@@ -85,7 +85,7 @@ export class Match {
                                                 this.round.trumpSuit,
                                                 this.trick.leadSuit);
         let winningTeam = this.players[winner].team;
-        
+
         _.each(this.trick.cardsPlayed, card => {
             this.teams[winningTeam].cardsWon.push(card)
         });
@@ -95,7 +95,6 @@ export class Match {
             return winner
         } else {
             return null
-        }
-              
+        }  
     }
 }
