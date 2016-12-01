@@ -5,7 +5,6 @@ import {Match} from '../src/match';
 import {Deck} from '../src/deck';
 
 test.beforeEach(`create a new team`, t => {
-    t.context.deck = new Deck();
     let teamSettings = {
         'The Knicks': ['Kristaps Porziņģis', 'Rajens Kaspersons'],
         'The Celtics': ['Paul Pierce', 'Kevin Garnet']
@@ -43,7 +42,7 @@ test(`round and trick are initiated correctly`, t => {
 
 test(`trick is completed and the winning player is returned`, t => {
     let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
-    let [aceSpades, kingHearts, twoClubs, twoSpades] = t.context.deck.drawSpecificCards(...cardsToDraw);
+    let [aceSpades, kingHearts, twoClubs, twoSpades] = t.context.match.deck.drawSpecificCards(...cardsToDraw);
     let cardsPlayed = {
         'Kristaps Porziņģis': aceSpades,
         'Paul Pierce': kingHearts,

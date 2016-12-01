@@ -2,7 +2,7 @@ import * as _ from "lodash";
 
 import {Player} from "./player"
 import {Team} from "./team"
-import {Card} from "./deck"
+import {Deck, Card} from "./deck"
 import * as tools from "./tools"
 
 interface TeamSettings {
@@ -44,10 +44,12 @@ export class Match {
     settings: Settings
     teams: Teams = {}
     players: Players = {}
+    deck: Deck
     round: Round
     trick: Trick
 
     constructor(teamSettings: TeamSettings, settings?: Settings) {
+        this.deck = new Deck();
         this.settings = settings || {
             cardsPerRound: 6
         };
