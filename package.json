@@ -1,7 +1,7 @@
 {
-  "name": "hi-lo-jack",
+  "name": "high-low-jack",
   "version": "0.0.1",
-  "description": "An engine for the card game `hi-lo-jack`.",
+  "description": "An engine for the card game `high-low-jack`.",
   "main": "index.js",
   "scripts": {
     "test": "tsc && ava"
@@ -24,7 +24,7 @@
     "tap": true
   },
   "keywords": [
-    "hi-lo-jack",
+    "high-low-jack",
     "high",
     "low",
     "jack",
@@ -32,5 +32,6 @@
     "game"
   ],
   "author": "Ryan Casperson <casperson.ryan@gmail.com>",
+  "repository": "https://github.com/rbcasperson/high-low-jack",
   "license": "MIT"
 }

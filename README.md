@@ -1,4 +1,4 @@
-# hi-lo-jack
+# high-low-jack
 
 ## Table of Contents
 - [Installation](#installation)
@@ -8,7 +8,7 @@
 ## Installation
 
 ```
-$ npm install --save hi-lo-jack
+$ npm install --save high-low-jack
 ```
 
 ## How To Play
