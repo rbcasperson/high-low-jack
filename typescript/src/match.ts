@@ -2,11 +2,16 @@ import * as _ from "lodash";
 
 import {Player} from "./player"
 import {Team} from "./team"
-import {Card} from "./deck"
+import {Deck, Card} from "./deck"
 import * as tools from "./tools"
 
 interface TeamSettings {
     [teamName: string]: string[]
+}
+
+interface Settings {
+    startingCardsPerPlayer: number,
+    cardsPerRound: number
 }
 
 interface scores {
@@ -37,12 +42,19 @@ interface Trick {
 }
 
 export class Match {
+    settings: Settings
     teams: Teams = {}
     players: Players = {}
+    deck: Deck
     round: Round
     trick: Trick
 
-    constructor(teamSettings: TeamSettings) {
+    constructor(teamSettings: TeamSettings, settings?: Settings) {
+        this.deck = new Deck();
+        this.settings = settings || {
+            startingCardsPerPlayer: 6,
+            cardsPerRound: 6
+        };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
             number: 0,
@@ -72,11 +84,32 @@ export class Match {
         })
     }
 
-    completeTrick(): void {
+    deal(): void {
+        _.each(this.players, (player, playerName) => {
+            player.hand = this.deck.draw(this.settings.startingCardsPerPlayer);
+        });
+    }
+
+    playCard(playerName: string, cardName: string): void {
+        let cardBeingPlayed = this.players[playerName].removeCard(cardName);
+        this.trick.cardsPlayed[playerName] = cardBeingPlayed;
+    }
+
+    completeTrick(): string | null {
         let winner = tools.determineTrickWinner(this.trick.cardsPlayed, 
                                                 this.round.trumpSuit,
                                                 this.trick.leadSuit);
-        let winningTeam = tools.getTeamFromPlayer(this.teams, winner)
-              
+        let winningTeam = this.players[winner].team;
+
+        _.each(this.trick.cardsPlayed, card => {
+            this.teams[winningTeam].cardsWon.push(card)
+        });
+        this.trick.cardsPlayed = {};
+
+        if (this.trick.number < this.settings.cardsPerRound ) {
+            return winner
+        } else {
+            return null
+        }  
     }
 }

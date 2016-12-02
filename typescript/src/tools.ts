@@ -29,13 +29,3 @@ export function determineTrickWinner(cardsPlayed: CardsPlayed, trumpSuit: string
         return _determineTrickWinner(cardsPlayed, leadSuit)
     }
 }
-
-export function getTeamFromPlayer(teams: Teams, playerName: string): string {
-    let thisPlayersTeam = undefined;
-    _.each(teams, (team, teamName) => {
-        if (team.players[playerName]) {
-            thisPlayersTeam = teamName
-        };
-    });
-    return thisPlayersTeam
-}
