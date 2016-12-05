@@ -40,3 +40,17 @@ test(`trick winner can be determined`, t => {
     t.is(winnerTrump, 'Player 1');
     t.is(winnerNoTrump, 'Player 2');
 });
+
+test(`a bid can be determined valid or not valid`, t => {
+    let maxBid = 4;
+    let currentBid = {
+        playerName: 'Bob',
+        amount: 3
+    };
+    t.true(tools.isValidBid(4, currentBid, maxBid));
+    t.false(tools.isValidBid(3, currentBid, maxBid));
+    // A bid of 1 cannot be made
+    t.false(tools.isValidBid(1, undefined, maxBid));
+    // Test a max bid higher than 4
+    t.true(tools.isValidBid(5, currentBid, 5));
+});

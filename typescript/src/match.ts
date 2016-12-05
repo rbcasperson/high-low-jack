@@ -11,7 +11,8 @@ interface TeamSettings {
 
 interface Settings {
     startingCardsPerPlayer: number,
-    cardsPerRound: number
+    tricksPerRound: number,
+    maxBid: number
 }
 
 interface scores {
@@ -26,9 +27,15 @@ interface Players {
     [playerName: string]: Player
 }
 
-interface Round {
+export interface Bid {
+    playerName: string,
+    amount: number
+}
+
+export interface Round {
     number: number,
-    trumpSuit: string
+    trumpSuit: string,
+    bid: Bid
 }
 
 export interface CardsPlayed {
@@ -38,7 +45,8 @@ export interface CardsPlayed {
 interface Trick {
     number: number,
     leadSuit: string,
-    cardsPlayed: CardsPlayed
+    cardsPlayed: CardsPlayed,
+    leadPlayer: string
 }
 
 export class Match {
@@ -53,17 +61,23 @@ export class Match {
         this.deck = new Deck();
         this.settings = settings || {
             startingCardsPerPlayer: 6,
-            cardsPerRound: 6
+            tricksPerRound: 6,
+            maxBid: 4
         };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
             number: 0,
-            trumpSuit: ''
+            trumpSuit: '',
+            bid: {
+                playerName: 'No Bids Yet!',
+                amount: 0
+            }
         };
         this.trick = {
             number: 0,
             leadSuit: '',
-            cardsPlayed: {}
+            cardsPlayed: {},
+            leadPlayer: ''
         };
     }
 
@@ -90,26 +104,54 @@ export class Match {
         });
     }
 
+    makeBid(playerName: string, bid: number): boolean {
+        if (tools.isValidBid(bid, this.round.bid, this.settings.maxBid)) {
+            this.round.bid = {
+                playerName: playerName,
+                amount: bid
+            }
+            return true
+        } else {
+            console.log(`Bid of ${bid} from ${playerName} is not valid.`);
+            return false
+        };
+
+    }
+
     playCard(playerName: string, cardName: string): void {
         let cardBeingPlayed = this.players[playerName].removeCard(cardName);
         this.trick.cardsPlayed[playerName] = cardBeingPlayed;
     }
 
-    completeTrick(): string | null {
+    completeTrick(): void {
         let winner = tools.determineTrickWinner(this.trick.cardsPlayed, 
                                                 this.round.trumpSuit,
                                                 this.trick.leadSuit);
         let winningTeam = this.players[winner].team;
 
-        _.each(this.trick.cardsPlayed, card => {
+        _.each(this.trick.cardsPlayed, (card, playerName) => {
             this.teams[winningTeam].cardsWon.push(card)
+            if (card.suit === this.round.trumpSuit) {
+                this.teams[winningTeam].trumpCardsWon.push(card);
+            };
         });
         this.trick.cardsPlayed = {};
 
-        if (this.trick.number < this.settings.cardsPerRound ) {
-            return winner
+        if (this.trick.number < this.settings.tricksPerRound) {
+            this.trick.number += 1;
+            this.trick.leadPlayer = winner;
         } else {
-            return null
-        }  
+            // Not sure yet if I want this to happen automatically. It'd be convenient.
+            //this.completeRound()
+        };
+    }
+
+    completeRound(): void {
+        // 1. Determine how many points each team earned
+        let pointsEarned = tools.determinePointsEarned();
+        // 2. Check if the bidding team made the bid
+        // 3. Update each team's score accordingly
+        // 4. Check if the match is over
+        // 5. If it's not over, reset the round and prepare for a new one.
     }
 }
