@@ -14,17 +14,21 @@ test.beforeEach(`create a new team`, t => {
 });
 
 test(`default settings are applied by default`, t => {
-    t.is(t.context.match.settings.cardsPerRound, 6);
+    t.is(t.context.match.settings.startingCardsPerPlayer, 6);
+    t.is(t.context.match.settings.tricksPerRound, 6);
+    t.is(t.context.match.settings.maxBid, 4);
 });
 
 test(`settings can be customized`, t => {
     let customSettings = {
         startingCardsPerPlayer: 9,
-        cardsPerRound: 9
+        tricksPerRound: 9,
+        maxBid: 5
     }
     let match = new Match(t.context.teamSettings, customSettings)
     t.is(match.settings.startingCardsPerPlayer, 9);
-    t.is(match.settings.cardsPerRound, 9);
+    t.is(match.settings.tricksPerRound, 9);
+    t.is(match.settings.maxBid, 5);
 });
 
 test(`round and trick are initiated correctly`, t => {
@@ -69,7 +73,19 @@ test(`a card can be played by a player`, t => {
 
 });
 
-test(`trick is completed and the winning player is returned`, t => {
+test(`a bid can be made by a player`, t => {
+    let validBid = t.context.match.makeBid('Rajens Kaspersons', 2);
+    t.true(validBid);
+    t.deepEqual(t.context.match.round.bid, {
+        playerName: 'Rajens Kaspersons',
+        amount: 2
+    });
+    let invalidBid = t.context.match.makeBid('Kristaps Porziņģis', 2);
+    t.false(invalidBid);
+
+})
+
+test(`a trick is completed, resetting Match().trick for the next trick`, t => {
     let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
     let [aceSpades, kingHearts, twoClubs, twoSpades] = t.context.match.deck.drawSpecificCards(...cardsToDraw);
     let cardsPlayed = {
@@ -82,9 +98,12 @@ test(`trick is completed and the winning player is returned`, t => {
     t.context.match.trick.number = 1;
     t.context.match.trick.leadSuit = 'hearts';
     t.context.match.round.trumpSuit = 'spades';
-    let winner = t.context.match.completeTrick()
-    t.is(winner, 'Kristaps Porziņģis');
+    t.context.match.completeTrick()
+    t.is(t.context.match.trick.leadPlayer, 'Kristaps Porziņģis');
+    t.is(t.context.match.trick.number, 2);
     t.deepEqual(t.context.match.trick.cardsPlayed, {});
     t.deepEqual(t.context.match.teams['The Knicks'].cardsWon, [aceSpades, kingHearts, twoClubs, twoSpades]);
     t.deepEqual(t.context.match.teams['The Celtics'].cardsWon, []);
+    t.deepEqual(t.context.match.teams['The Knicks'].trumpCardsWon, [aceSpades, twoSpades]);
+    t.deepEqual(t.context.match.teams['The Celtics'].trumpCardsWon, []);
 });

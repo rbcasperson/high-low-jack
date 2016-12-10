@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import test from 'ava';
 
-import {Deck, SUITS, VALUES, VALUE_RANKS} from '../src/deck';
+import {Deck, SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from '../src/deck';
 
 test.beforeEach(`create a test deck`, t => {
     t.context.deck = new Deck();
@@ -28,6 +28,12 @@ test(`a deck has 4 cards of each value`, t => {
 test(`each card has the correct default rank`, t => {
     _.each(t.context.deck.cards, card => {
         t.is(card.rank, VALUE_RANKS[card.value]);
+    });
+});
+
+test(`each card has the correct default game point value`, t => {
+    _.each(t.context.deck.cards, card => {
+        t.is(card.gamePoints, GAME_POINT_VALUES[card.value]);
     });
 });
 

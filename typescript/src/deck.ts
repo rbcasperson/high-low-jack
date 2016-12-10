@@ -18,8 +18,28 @@ export const VALUE_RANKS = {
     '3': 12,
     '2': 13
 };
+// Game point values
+export const GAME_POINT_VALUES = {
+    'ace': 4,
+    'king': 3,
+    'queen': 2,
+    'jack': 1,
+    '10': 10,
+    '9': 0,
+    '8': 0,
+    '7': 0,
+    '6': 0,
+    '5': 0,
+    '4': 0,
+    '3': 0,
+    '2': 0
+};
 
 interface ValueRanks {
+    [value: string]: number
+};
+
+interface GamePointValues {
     [value: string]: number
 };
 
@@ -27,23 +47,28 @@ export interface Card {
     name: string,
     suit: string,
     value: string,
-    rank: number
+    rank: number,
+    gamePoints: number
 };
 
 export class Deck {
     valueRanks: ValueRanks;
+    gamePointValues: GamePointValues
     cards: Card[] = [];
     cardsInPlay: Card[] = [];
 
-    constructor(valueRanks: ValueRanks = VALUE_RANKS, values: string[] = VALUES, suits: string[] = SUITS) {
+    constructor(valueRanks: ValueRanks = VALUE_RANKS, gamePointValues: GamePointValues = GAME_POINT_VALUES,
+                values: string[] = VALUES, suits: string[] = SUITS) {
         this.valueRanks = valueRanks;
+        this.gamePointValues = gamePointValues
         _.each(suits, suit => {
             _.each(values, value => {
                 let card: Card = {
                     name: `${value} of ${suit}`,
                     suit: suit,
                     value: value,
-                    rank: this.valueRanks[value]
+                    rank: this.valueRanks[value],
+                    gamePoints: this.gamePointValues[value]
                 };
                 this.cards.push(card);
             });
