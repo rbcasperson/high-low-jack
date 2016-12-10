@@ -104,4 +104,6 @@ test(`a trick is completed, resetting Match().trick for the next trick`, t => {
     t.deepEqual(t.context.match.trick.cardsPlayed, {});
     t.deepEqual(t.context.match.teams['The Knicks'].cardsWon, [aceSpades, kingHearts, twoClubs, twoSpades]);
     t.deepEqual(t.context.match.teams['The Celtics'].cardsWon, []);
+    t.deepEqual(t.context.match.teams['The Knicks'].trumpCardsWon, [aceSpades, twoSpades]);
+    t.deepEqual(t.context.match.teams['The Celtics'].trumpCardsWon, []);
 });

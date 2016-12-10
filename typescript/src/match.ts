@@ -148,7 +148,7 @@ export class Match {
 
     completeRound(): void {
         // 1. Determine how many points each team earned
-        let pointsEarned = tools.determinePointsEarned();
+        let pointsEarned = tools.determinePointsEarned(this.teams);
         // 2. Check if the bidding team made the bid
         // 3. Update each team's score accordingly
         // 4. Check if the match is over

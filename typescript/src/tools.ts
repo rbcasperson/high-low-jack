@@ -34,7 +34,7 @@ export function isValidBid(bid: number, currentBid: Bid, maxBid: number): boolea
     return bid > 1 && currentBid.amount < bid && bid <= maxBid
 }
 
-function _highWinner(teams: Teams): string {
+export function _highWinner(teams: Teams): string {
     let highWinner = undefined
     _.each(teams, (team, teamName) => {
         if (!highWinner && team.trumpCardsWon.length > 0) {
@@ -42,28 +42,70 @@ function _highWinner(teams: Teams): string {
                 teamName: teamName,
                 card: team.trumpCardsWon[0]
             };
-        } else {
-            _.each(team.trumpCardsWon, trumpCardWon => {
-                if (trumpCardWon.rank > highWinner.card.rank) {
-                    highWinner.teamName = teamName;
-                    highWinner.card = trumpCardWon;
-                };
-            });
-        };
+        }
+        _.each(team.trumpCardsWon, trumpCardWon => {
+            if (trumpCardWon.rank < highWinner.card.rank) {
+                highWinner.teamName = teamName;
+                highWinner.card = trumpCardWon;
+            };
+        });
     });
     return highWinner.teamName
 }
 
-function _lowWinner(teams: Teams): string {
-    
+export function _lowWinner(teams: Teams): string {
+    let lowWinner = undefined
+    _.each(teams, (team, teamName) => {
+        if (!lowWinner && team.trumpCardsWon.length > 0) {
+            lowWinner = {
+                teamName: teamName,
+                card: team.trumpCardsWon[0]
+            };
+        }
+        _.each(team.trumpCardsWon, trumpCardWon => {
+            if (trumpCardWon.rank > lowWinner.card.rank) {
+                lowWinner.teamName = teamName;
+                lowWinner.card = trumpCardWon;
+            };
+        });
+    });
+    return lowWinner.teamName
 }
 
-function _jackWinner(teams: Teams): string | false {
-    return false    
+export function _jackWinner(teams: Teams): string | false {
+    let jackWinner: string | false = false
+    _.each(teams, (team, teamName) => {
+        _.each(team.trumpCardsWon, card => {
+            if (card.value === "jack") {
+                jackWinner = teamName
+            };
+        });
+    });
+    return jackWinner
 }
 
-function _gameWinner(teams: Teams): string {
-    
+export function _gameWinner(teams: Teams): string | false {
+    let gameWinner = undefined;
+    let winningGameAmount = 0;
+    let currentlyTied = true;
+    _.each(teams, (team, teamName) => {
+        let teamGameAmount = _.sumBy(team.cardsWon, card => {
+            return card.gamePoints
+        });
+        if (teamGameAmount === winningGameAmount) {
+            currentlyTied = true;
+        } else if (teamGameAmount > winningGameAmount) {
+            currentlyTied = false;
+            gameWinner = teamName;
+            winningGameAmount = teamGameAmount
+        }
+    });
+    if (currentlyTied) {
+        // If there is a tie, no team wins the game point
+        return false
+    } else {
+        return gameWinner
+    }
 }
 
 export function determinePointsEarned(teams: Teams) {
@@ -78,9 +120,10 @@ export function determinePointsEarned(teams: Teams) {
     if (jackWinner) {
         pointsEarned[jackWinner].push('jack');
     }
-    pointsEarned[_gameWinner(teams)].push('game');
-
+    let gameWinner = _gameWinner(teams);
+    if (gameWinner) {
+        pointsEarned[gameWinner].push('game');
+    }
+    
     return pointsEarned
-
-
 }
