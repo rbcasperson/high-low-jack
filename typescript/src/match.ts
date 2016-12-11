@@ -12,7 +12,8 @@ interface TeamSettings {
 interface Settings {
     startingCardsPerPlayer: number,
     tricksPerRound: number,
-    maxBid: number
+    maxBid: number,
+    winningScore: number
 }
 
 interface scores {
@@ -56,28 +57,30 @@ export class Match {
     deck: Deck
     round: Round
     trick: Trick
+    winningTeam: string
 
     constructor(teamSettings: TeamSettings, settings?: Settings) {
         this.deck = new Deck();
         this.settings = settings || {
             startingCardsPerPlayer: 6,
             tricksPerRound: 6,
-            maxBid: 4
+            maxBid: 4,
+            winningScore: 11
         };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
-            number: 0,
-            trumpSuit: '',
+            number: 1,
+            trumpSuit: undefined,
             bid: {
-                playerName: 'No Bids Yet!',
+                playerName: undefined,
                 amount: 0
             }
         };
         this.trick = {
-            number: 0,
-            leadSuit: '',
+            number: 1,
+            leadSuit: undefined,
             cardsPlayed: {},
-            leadPlayer: ''
+            leadPlayer: undefined
         };
     }
 
@@ -121,6 +124,9 @@ export class Match {
     playCard(playerName: string, cardName: string): void {
         let cardBeingPlayed = this.players[playerName].removeCard(cardName);
         this.trick.cardsPlayed[playerName] = cardBeingPlayed;
+        if (!this.trick.leadSuit) {
+            this.trick.leadSuit = cardBeingPlayed.suit
+        };
     }
 
     completeTrick(): void {
@@ -140,6 +146,7 @@ export class Match {
         if (this.trick.number < this.settings.tricksPerRound) {
             this.trick.number += 1;
             this.trick.leadPlayer = winner;
+            this.trick.leadSuit = undefined;
         } else {
             // Not sure yet if I want this to happen automatically. It'd be convenient.
             //this.completeRound()
@@ -150,8 +157,33 @@ export class Match {
         // 1. Determine how many points each team earned
         let pointsEarned = tools.determinePointsEarned(this.teams);
         // 2. Check if the bidding team made the bid
+        let biddingTeamName = this.players[this.round.bid.playerName].team;
+        let bidWasNotMade = pointsEarned[biddingTeamName].length < this.round.bid.amount;
         // 3. Update each team's score accordingly
+        _.each(pointsEarned, (points, teamName) => {
+            if (teamName === biddingTeamName && bidWasNotMade) {
+                this.teams[teamName].score -= this.round.bid.amount;
+            } else {
+                this.teams[teamName].score += pointsEarned[teamName].length;
+            };
+        });
         // 4. Check if the match is over
+        let matchIsOver = false;
+        _.each(this.teams, (team, teamName) => {
+            if (team.score >= this.settings.winningScore) {
+                matchIsOver = true;
+                this.winningTeam = teamName;
+                return teamName
+            }
+        });
         // 5. If it's not over, reset the round and prepare for a new one.
+        this.round = {
+            number: this.round.number + 1,
+            trumpSuit: undefined,
+            bid: {
+                playerName: undefined,
+                amount: 0
+            }
+        };
     }
 }
