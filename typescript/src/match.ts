@@ -12,7 +12,8 @@ interface TeamSettings {
 interface Settings {
     startingCardsPerPlayer: number,
     tricksPerRound: number,
-    maxBid: number
+    maxBid: number,
+    winningScore: number
 }
 
 interface scores {
@@ -56,28 +57,30 @@ export class Match {
     deck: Deck
     round: Round
     trick: Trick
+    winningTeam: string
 
     constructor(teamSettings: TeamSettings, settings?: Settings) {
         this.deck = new Deck();
         this.settings = settings || {
             startingCardsPerPlayer: 6,
             tricksPerRound: 6,
-            maxBid: 4
+            maxBid: 4,
+            winningScore: 11
         };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
             number: 0,
-            trumpSuit: '',
+            trumpSuit: undefined,
             bid: {
-                playerName: 'No Bids Yet!',
+                playerName: undefined,
                 amount: 0
             }
         };
         this.trick = {
             number: 0,
-            leadSuit: '',
+            leadSuit: undefined,
             cardsPlayed: {},
-            leadPlayer: ''
+            leadPlayer: undefined
         };
     }
 

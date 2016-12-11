@@ -17,18 +17,21 @@ test(`default settings are applied by default`, t => {
     t.is(t.context.match.settings.startingCardsPerPlayer, 6);
     t.is(t.context.match.settings.tricksPerRound, 6);
     t.is(t.context.match.settings.maxBid, 4);
+    t.is(t.context.match.settings.winningScore, 11);
 });
 
 test(`settings can be customized`, t => {
     let customSettings = {
         startingCardsPerPlayer: 9,
         tricksPerRound: 9,
-        maxBid: 5
+        maxBid: 5,
+        winningScore: 15
     }
     let match = new Match(t.context.teamSettings, customSettings)
     t.is(match.settings.startingCardsPerPlayer, 9);
     t.is(match.settings.tricksPerRound, 9);
     t.is(match.settings.maxBid, 5);
+    t.is(match.settings.winningScore, 15);
 });
 
 test(`round and trick are initiated correctly`, t => {

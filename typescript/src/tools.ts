@@ -108,7 +108,11 @@ export function _gameWinner(teams: Teams): string | false {
     }
 }
 
-export function determinePointsEarned(teams: Teams) {
+interface PointsEarned {
+    [teamName: string]: string[]
+}
+
+export function determinePointsEarned(teams: Teams): PointsEarned {
     let pointsEarned = {};
     _.each(teams, (team, teamName) => {
         pointsEarned[teamName] = [];
