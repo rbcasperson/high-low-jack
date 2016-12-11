@@ -72,6 +72,16 @@ test(`a bid can be determined valid or not valid`, t => {
     t.true(tools.isValidBid(5, currentBid, 5));
 });
 
+test(`a card can be determined valid to play or not valid`, t => {
+    let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
+    let hand = t.context.deck.drawSpecificCards(...cardsToDraw);
+    let leadSuit = 'clubs'
+    let trumpSuit = 'diamonds'
+
+    t.true(tools.isValidCardToPlay('2 of clubs', hand, leadSuit, trumpSuit));
+    t.false(tools.isValidCardToPlay('king of hearts', hand, leadSuit, trumpSuit));
+});
+
 test(`the high winner can be determined`, t => {
     let highWinner = tools._highWinner(t.context.match.teams);
     t.is(highWinner, 'The Knicks');

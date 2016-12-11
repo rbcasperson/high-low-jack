@@ -40,7 +40,7 @@ export function isValidCardToPlay(cardName: string, hand: Card[], leadSuit: stri
         return true
     };
     // If the player has a card of the lead suit, they must follow suit
-    return _.some(hand, card => {
+    return !_.some(hand, card => {
         return card.suit === leadSuit
     });
 }
