@@ -4,7 +4,9 @@ import test from 'ava';
 import {Match} from '../src/match';
 import {Deck} from '../src/deck';
 
-test.beforeEach(`create a new team`, t => {
+test.beforeEach(t => {
+    t.context.deck = new Deck();
+
     let teamSettings = {
         'The Knicks': ['Kristaps Porziņģis', 'Rajens Kaspersons'],
         'The Celtics': ['Paul Pierce', 'Kevin Garnet']
@@ -109,4 +111,27 @@ test(`a trick is completed, resetting Match().trick for the next trick`, t => {
     t.deepEqual(t.context.match.teams['The Celtics'].cardsWon, []);
     t.deepEqual(t.context.match.teams['The Knicks'].trumpCardsWon, [aceSpades, twoSpades]);
     t.deepEqual(t.context.match.teams['The Celtics'].trumpCardsWon, []);
+});
+
+test(`a round is completed, resetting Match().round for the next round`, t => {
+    t.context.match.round.bid = {
+        playerName: 'Kristaps Porziņģis',
+        amount: 3
+    }
+
+    let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
+    let knicksCards = t.context.deck.drawSpecificCards(...cardsToDraw);
+    let moreCardsToDraw = ['queen of clubs', '10 of clubs', '4 of diamonds', 'jack of spades'];
+    let celticsCards = t.context.deck.drawSpecificCards(...moreCardsToDraw);
+
+    t.context.match.teams['The Knicks'].cardsWon = knicksCards;
+    t.context.match.teams['The Knicks'].trumpCardsWon = [knicksCards[0], knicksCards[3]];
+    t.context.match.teams['The Celtics'].cardsWon = celticsCards;
+    t.context.match.teams['The Celtics'].trumpCardsWon = [celticsCards[3]];
+
+    t.context.match.completeRound()
+
+    t.is(t.context.match.teams['The Knicks'].score, -3);
+    t.is(t.context.match.teams['The Celtics'].score, 2);
+    t.is(t.context.match.round.number, 2);
 });
