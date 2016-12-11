@@ -124,6 +124,9 @@ export class Match {
     playCard(playerName: string, cardName: string): void {
         let cardBeingPlayed = this.players[playerName].removeCard(cardName);
         this.trick.cardsPlayed[playerName] = cardBeingPlayed;
+        if (!this.trick.leadSuit) {
+            this.trick.leadSuit = cardBeingPlayed.suit
+        };
     }
 
     completeTrick(): void {
@@ -143,6 +146,7 @@ export class Match {
         if (this.trick.number < this.settings.tricksPerRound) {
             this.trick.number += 1;
             this.trick.leadPlayer = winner;
+            this.trick.leadSuit = undefined;
         } else {
             // Not sure yet if I want this to happen automatically. It'd be convenient.
             //this.completeRound()
