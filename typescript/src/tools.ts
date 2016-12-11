@@ -34,6 +34,17 @@ export function isValidBid(bid: number, currentBid: Bid, maxBid: number): boolea
     return bid > 1 && currentBid.amount < bid && bid <= maxBid
 }
 
+export function isValidCardToPlay(cardName: string, hand: Card[], leadSuit: string, trumpSuit: string): boolean {
+    // If there is no lead suit yet, the card is trump, or the card follows the lead suit, it is valid
+    if (!leadSuit || _.endsWith(cardName, trumpSuit) || _.endsWith(cardName, leadSuit)) {
+        return true
+    };
+    // If the player has a card of the lead suit, they must follow suit
+    return _.some(hand, card => {
+        return card.suit === leadSuit
+    });
+}
+
 export function _highWinner(teams: Teams): string {
     let highWinner = undefined
     _.each(teams, (team, teamName) => {

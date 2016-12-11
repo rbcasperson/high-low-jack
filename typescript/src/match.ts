@@ -121,7 +121,11 @@ export class Match {
 
     }
 
-    playCard(playerName: string, cardName: string): void {
+    playCard(playerName: string, cardName: string): void | false {
+        if (!tools.isValidCardToPlay(cardName, this.players[playerName].hand, this.trick.leadSuit, this.round.trumpSuit)) {
+            console.log(`${playerName} is not allowed to play the ${cardName} right now.`);
+            return false
+        }
         let cardBeingPlayed = this.players[playerName].removeCard(cardName);
         this.trick.cardsPlayed[playerName] = cardBeingPlayed;
         if (!this.trick.leadSuit) {
