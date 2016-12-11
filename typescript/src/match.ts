@@ -69,7 +69,7 @@ export class Match {
         };
         this.setUpTeamsAndPlayers(teamSettings);
         this.round = {
-            number: 0,
+            number: 1,
             trumpSuit: undefined,
             bid: {
                 playerName: undefined,
@@ -77,7 +77,7 @@ export class Match {
             }
         };
         this.trick = {
-            number: 0,
+            number: 1,
             leadSuit: undefined,
             cardsPlayed: {},
             leadPlayer: undefined

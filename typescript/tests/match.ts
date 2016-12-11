@@ -35,8 +35,8 @@ test(`settings can be customized`, t => {
 });
 
 test(`round and trick are initiated correctly`, t => {
-    t.is(t.context.match.round.number, 0);
-    t.is(t.context.match.trick.number, 0);
+    t.is(t.context.match.round.number, 1);
+    t.is(t.context.match.trick.number, 1);
     t.deepEqual(t.context.match.trick.cardsPlayed, {});
 });
 
