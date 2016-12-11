@@ -157,8 +157,34 @@ export class Match {
         // 1. Determine how many points each team earned
         let pointsEarned = tools.determinePointsEarned(this.teams);
         // 2. Check if the bidding team made the bid
+        let biddingTeamName = this.players[this.round.bid.playerName].team
+        let bidWasNotMade = pointsEarned[biddingTeamName].length < this.round.bid.amount
         // 3. Update each team's score accordingly
+        _.each(pointsEarned, (points, teamName) => {
+            if (teamName === biddingTeamName && bidWasNotMade) {
+                this.teams[teamName].score -= this.round.bid.amount
+            } else {
+                this.teams[teamName].score += pointsEarned[teamName].length
+            }
+        });
         // 4. Check if the match is over
+        let matchIsOver = false;
+        _.each(this.teams, (team, teamName) => {
+            if (team.score >= this.settings.winningScore) {
+                matchIsOver = true;
+                this.winningTeam = teamName;
+                return teamName
+            }
+        });
         // 5. If it's not over, reset the round and prepare for a new one.
+        console.log('match not over');
+        this.round = {
+            number: this.round.number + 1,
+            trumpSuit: undefined,
+            bid: {
+                playerName: undefined,
+                amount: 0
+            }
+        };
     }
 }
