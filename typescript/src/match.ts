@@ -130,6 +130,9 @@ export class Match {
             if (!this.trick.leadSuit) {
                 this.trick.leadSuit = cardBeingPlayed.suit
             };
+            if (!this.round.trumpSuit) {
+                this.round.trumpSuit = cardBeingPlayed.suit
+            };
         };
     }
 
