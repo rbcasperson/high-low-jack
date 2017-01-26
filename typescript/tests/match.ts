@@ -74,7 +74,9 @@ test(`a card can be played by a player`, t => {
     t.context.match.players['Kristaps Porziņģis'].hand = [fiveDiamonds, sixClubs];
     t.context.match.playCard('Kristaps Porziņģis', '5 of diamonds');
     t.deepEqual(t.context.match.players['Kristaps Porziņģis'].hand, [sixClubs]);
-    t.deepEqual(t.context.match.trick.cardsPlayed['Kristaps Porziņģis'], fiveDiamonds)
+    t.deepEqual(t.context.match.trick.cardsPlayed['Kristaps Porziņģis'], fiveDiamonds);
+    t.is(t.context.match.trick.leadSuit, 'diamonds');
+    t.is(t.context.match.round.trumpSuit, 'diamonds');
 
 });
 
