@@ -180,6 +180,7 @@ export class Match {
             if (team.score >= this.settings.winningScore) {
                 matchIsOver = true;
                 this.winningTeam = teamName;
+                // I don't think this works...
                 return teamName
             }
         });
