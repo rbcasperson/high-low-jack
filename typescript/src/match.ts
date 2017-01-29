@@ -118,7 +118,10 @@ export class Match {
             console.log(`Bid of ${bid} from ${playerName} is not valid.`);
             return false
         };
+    }
 
+    completeBidding() {
+        this.trick.leadPlayer = this.round.bid.playerName
     }
 
     playCard(playerName: string, cardName: string): void {
