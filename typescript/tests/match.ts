@@ -92,6 +92,12 @@ test(`a bid can be made by a player`, t => {
 
 })
 
+test(`when bids are completed, the player with the winning bid is assigned as the lead player in the first trick`, t => {
+    t.context.match.makeBid('Rajens Kaspersons', 2);
+    t.context.match.completeBidding()
+    t.is(t.context.match.trick.leadPlayer, 'Rajens Kaspersons')
+})
+
 test(`a trick is completed, resetting Match().trick for the next trick`, t => {
     let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
     let [aceSpades, kingHearts, twoClubs, twoSpades] = t.context.match.deck.drawSpecificCards(...cardsToDraw);

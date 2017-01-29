@@ -53,9 +53,10 @@ test(`walk through initial setup and one complete round`, t => {
     match.makeBid('KG', 2);
     match.makeBid('KP', 3);
     t.deepEqual(match.round.bid, {playerName: 'KP', amount: 3});
+    // Complete the bidding
+    match.completeBidding()
+    t.is(match.trick.leadPlayer, 'KP')
     // Play the first trick's cards
-    // TODO - Add a completeBids() function that assigns trick.leadPlayer
-    // t.is(match.trick.leadPlayer, 'KP')
     match.playCard('KP', 'ace of hearts');
     t.is(match.trick.leadSuit, 'hearts');
     t.is(match.round.trumpSuit, 'hearts');
