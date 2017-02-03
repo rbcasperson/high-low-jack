@@ -1,4 +1,4 @@
-import {SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from './constants'
+import {SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from './deck/constants'
 
 export class Deck {
     cards
