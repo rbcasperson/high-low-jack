@@ -15,4 +15,23 @@ export function generateCards(suits, values, valueRanks, gamePointValues) {
         });
     });
     return cards
-}
+};
+
+export let shuffle = _.shuffle
+
+export function draw(deck, amount = 1) {
+    let cards = []; 
+    _.each(_.range(amount), i => {
+        let card = deck.cards.pop();
+        deck.cardsInPlay.push(card);
+        cards.push(card);
+    })
+    return [deck, cards]
+};
+
+export function collect(deck) {
+    deck.cards = deck.cards.concat(deck.cardsInPlay);
+    deck.cardsInPlay = [];
+    return deck
+};
+

@@ -2,7 +2,8 @@ import {SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from './deck/constants'
 import {generateCards} from './deck/tools'
 
 export class Deck {
-    cards
+    cards = [];
+    cardsInPlay = [];
 
     constructor(
         suits = SUITS, 
