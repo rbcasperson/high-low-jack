@@ -1,9 +1,17 @@
 import {SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from './deck/constants'
 import {generateCards} from './deck/tools'
 
+export interface Card {
+    name: string,
+    suit: string,
+    value: string,
+    rank: number,
+    gamePoints: number
+};
+
 export class Deck {
-    cards = [];
-    cardsInPlay = [];
+    cards: Card[] = [];
+    cardsInPlay: Card[] = [];
 
     constructor(
         suits = SUITS, 
