@@ -35,3 +35,10 @@ export function collect(deck) {
     return deck
 };
 
+export function deal(deck, players, cardsPerPlayer){
+    _.each(players, (player, playerName) => {
+        [deck, player.hand] = draw(cardsPerPlayer);
+    });
+    return [deck, players]
+}
+
