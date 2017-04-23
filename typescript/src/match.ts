@@ -1,90 +1,78 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
-import {Player} from "./player"
-import {Team} from "./team"
-import {Deck, Card} from "./deck"
-import * as tools from "./tools"
+import {Deck, Card} from './deck';
+import {Team} from './team';
+import {Player} from './player';
+import {isValidBid, isValidCardToPlay, determineTrickWinner, determinePointsEarnedForEachTeam} from './match/tools'
+import {shuffle, draw, removeCard} from './deck/tools'
 
-interface TeamSettings {
-    [teamName: string]: string[]
-}
-
-interface Settings {
-    startingCardsPerPlayer: number,
-    tricksPerRound: number,
-    maxBid: number,
-    winningScore: number
-}
-
-interface scores {
-    [teamName: string]: number
-}
-
-export interface Teams {
-    [teamName: string]: Team
-}
-
-interface Players {
-    [playerName: string]: Player
-}
-
-export interface Bid {
-    playerName: string,
-    amount: number
-}
-
-export interface Round {
-    number: number,
-    trumpSuit: string,
-    bid: Bid
-}
-
-export interface CardsPlayed {
+export interface CardsByPlayer {
     [playerName: string]: Card
 }
 
 interface Trick {
     number: number,
     leadSuit: string,
-    cardsPlayed: CardsPlayed,
+    cardsPlayed: CardsByPlayer,
     leadPlayer: string
 }
 
-export class Match {
-    settings: Settings
-    teams: Teams = {}
-    players: Players = {}
-    deck: Deck
-    round: Round
-    trick: Trick
-    winningTeam: string
+let defaultSettings = {
+    cardsPerPlayer: 6,
+    maxBid: 4,
+    teams: [
+        {
+            name: 'Team 1',
+            players: [
+                'Player 1',
+                'Player 2'
+            ]
+        },
+        {
+            name: 'Team 2',
+            players: [
+                'Player 3',
+                'Player 4'
+            ]
+        }
+    ]
+};
 
-    constructor(teamSettings: TeamSettings, settings?: Settings) {
-        this.deck = new Deck();
-        this.settings = settings || {
-            startingCardsPerPlayer: 6,
-            tricksPerRound: 6,
-            maxBid: 4,
-            winningScore: 11
-        };
-        this.setUpTeamsAndPlayers(teamSettings);
-        this.round = {
-            number: 1,
-            trumpSuit: undefined,
-            bid: {
-                playerName: undefined,
-                amount: 0
-            }
-        };
-        this.trick = {
-            number: 1,
-            leadSuit: undefined,
-            cardsPlayed: {},
-            leadPlayer: undefined
-        };
+export class Match {
+    settings;
+    deck = new Deck();
+    round = {
+        number: 1,
+        trumpSuit: undefined,
+        bid: {
+            playerName: undefined,
+            amount: 0
+        }
+    };
+    trick: Trick = {
+        number: 1,
+        leadSuit: undefined,
+        cardsPlayed: {},
+        leadPlayer: undefined
+    };
+    teams: {
+        [teamName: string]: Team 
+    } = {};
+    players: {
+        [playerName: string]: Player 
+    } = {};
+
+    constructor(settings = defaultSettings) {
+        this.settings = settings;
+        _.each(settings.teams, team => {
+            this.teams[team.name] = new Team(team.name, team.players)
+            _.each(team.players, playerName => {
+                this.players[playerName] = new Player(playerName, team.name)
+            })
+        });
     }
 
-    get scores(): scores {
+    get scores() {
         let scores = {}
         _.each(this.teams, (team, teamName) => {
             scores[teamName] = team.score
@@ -92,58 +80,46 @@ export class Match {
         return scores
     }
 
-    setUpTeamsAndPlayers(teamSettings: TeamSettings): void {
-        _.each(teamSettings, (playerNames, teamName) => {
-            this.teams[teamName] = new Team(teamName, playerNames)
-            _.each(playerNames, playerName => {
-                this.players[playerName] = new Player(playerName, teamName)
-            })
-        })
-    }
-
-    deal(): void {
+    deal() {
+        this.deck.cards = shuffle(this.deck.cards);
         _.each(this.players, (player, playerName) => {
-            player.hand = this.deck.draw(this.settings.startingCardsPerPlayer);
+            [this.deck, player.hand] = draw(this.deck, this.settings.cardsPerPlayer);
         });
     }
 
-    makeBid(playerName: string, bid: number): boolean {
-        if (tools.isValidBid(bid, this.round.bid, this.settings.maxBid)) {
-            this.round.bid = {
-                playerName: playerName,
-                amount: bid
-            }
-            return true
-        } else {
-            console.log(`Bid of ${bid} from ${playerName} is not valid.`);
-            return false
+    makeBid(playerName, bidAmount) {
+        if (isValidBid(bidAmount, this.round.bid, this.settings.maxBid)) {
+            this.round.bid.amount = bidAmount;
+            this.round.bid.playerName = playerName
         };
     }
 
     completeBidding() {
-        this.trick.leadPlayer = this.round.bid.playerName
+        this.trick.leadPlayer = this.round.bid.playerName;
     }
 
-    playCard(playerName: string, cardName: string): void {
-        if (!tools.isValidCardToPlay(cardName, this.players[playerName].hand, this.trick.leadSuit, this.round.trumpSuit)) {
-            console.log(`${playerName} is not allowed to play the ${cardName} right now.`);
-        } else {
-            let cardBeingPlayed = this.players[playerName].removeCard(cardName);
+    playCard(cardName, playerName) {
+        if (isValidCardToPlay(cardName, this.players[playerName].hand, this.trick.leadSuit, this.round.trumpSuit)) {
+            let cardBeingPlayed;
+            [this.players[playerName].hand, cardBeingPlayed] = removeCard(this.players[playerName].hand, cardName);
             this.trick.cardsPlayed[playerName] = cardBeingPlayed;
             if (!this.trick.leadSuit) {
                 this.trick.leadSuit = cardBeingPlayed.suit
+                this.trick.leadPlayer = playerName
             };
             if (!this.round.trumpSuit) {
                 this.round.trumpSuit = cardBeingPlayed.suit
             };
+            return true
+        } else {
+            console.log(`${playerName} is not allowed to play the ${cardName} right now.`);
+            return false
         };
     }
 
-    completeTrick(): void {
-        let winner = tools.determineTrickWinner(this.trick.cardsPlayed, 
-                                                this.round.trumpSuit,
-                                                this.trick.leadSuit);
-        let winningTeam = this.players[winner].team;
+    completeTrick() {
+        let winningPlayerName = determineTrickWinner(this.trick.cardsPlayed, this.round.trumpSuit, this.trick.leadSuit);
+        let winningTeam = this.players[winningPlayerName].team;
 
         _.each(this.trick.cardsPlayed, (card, playerName) => {
             this.teams[winningTeam].cardsWon.push(card)
@@ -151,21 +127,21 @@ export class Match {
                 this.teams[winningTeam].trumpCardsWon.push(card);
             };
         });
-        this.trick.cardsPlayed = {};
 
-        if (this.trick.number < this.settings.tricksPerRound) {
+        this.trick.cardsPlayed = {};
+        if (this.trick.number < this.settings.cardsPerPlayer) {
             this.trick.number += 1;
-            this.trick.leadPlayer = winner;
+            this.trick.leadPlayer = winningPlayerName;
             this.trick.leadSuit = undefined;
+            return false
         } else {
-            // Not sure yet if I want this to happen automatically. It'd be convenient.
-            //this.completeRound()
-        };
+            return true
+        }
     }
 
-    completeRound(): void {
+    completeRound() {
         // 1. Determine how many points each team earned
-        let pointsEarned = tools.determinePointsEarned(this.teams);
+        let pointsEarned = determinePointsEarnedForEachTeam(this.teams);
         // 2. Check if the bidding team made the bid
         let biddingTeamName = this.players[this.round.bid.playerName].team;
         let bidWasNotMade = pointsEarned[biddingTeamName].length < this.round.bid.amount;
@@ -182,11 +158,12 @@ export class Match {
         _.each(this.teams, (team, teamName) => {
             if (team.score >= this.settings.winningScore) {
                 matchIsOver = true;
-                this.winningTeam = teamName;
-                // I don't think this works...
-                return teamName
+                //this.winningTeam = teamName;
             }
         });
+        if (matchIsOver) {
+            return true
+        }
         // 5. If it's not over, reset the round and prepare for a new one.
         this.round = {
             number: this.round.number + 1,
@@ -196,5 +173,6 @@ export class Match {
                 amount: 0
             }
         };
+        return false
     }
 }
