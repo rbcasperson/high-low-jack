@@ -1,145 +1,143 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import test from 'ava';
 
-import {Match} from '../src/match';
-import {Deck} from '../src/deck';
+import {Match} from '../src/match'
+import {Deck} from '../src/deck'
+import {removeCard} from '../src/deck/tools'
 
-test.beforeEach(t => {
-    t.context.deck = new Deck();
 
-    let teamSettings = {
-        'The Knicks': ['Kristaps Porziņģis', 'Rajens Kaspersons'],
-        'The Celtics': ['Paul Pierce', 'Kevin Garnet']
-    };
-    t.context.teamSettings = teamSettings;
-    t.context.match = new Match(teamSettings);
+export function getCard(cardName) {
+    return _.find(new Deck().cards, card => {
+        return card.name === cardName
+    });
+}
+
+
+test(`default settings, teams, and players are assigned by default`, t => {
+    let match = new Match();
+    t.is(match.settings.cardsPerPlayer, 6);
+    t.is(match.settings.maxBid, 4);
+    _.each(match.teams, (team, teamName) => {
+        t.true(_.includes(['Team 1', 'Team 2'], teamName))
+    });
+    _.each(match.players, (player, playerName) => {
+        t.true(_.includes(['Player 1', 'Player 2', 'Player 3', 'Player 4'], playerName))
+    });
 });
 
-test(`default settings are applied by default`, t => {
-    t.is(t.context.match.settings.startingCardsPerPlayer, 6);
-    t.is(t.context.match.settings.tricksPerRound, 6);
-    t.is(t.context.match.settings.maxBid, 4);
-    t.is(t.context.match.settings.winningScore, 11);
-});
-
-test(`settings can be customized`, t => {
+test(`custom settings, teams, and players can be assigned`, t => {
     let customSettings = {
-        startingCardsPerPlayer: 9,
-        tricksPerRound: 9,
+        cardsPerPlayer: 9,
         maxBid: 5,
-        winningScore: 15
-    }
-    let match = new Match(t.context.teamSettings, customSettings)
-    t.is(match.settings.startingCardsPerPlayer, 9);
-    t.is(match.settings.tricksPerRound, 9);
-    t.is(match.settings.maxBid, 5);
-    t.is(match.settings.winningScore, 15);
-});
-
-test(`round and trick are initiated correctly`, t => {
-    t.is(t.context.match.round.number, 1);
-    t.is(t.context.match.trick.number, 1);
-    t.deepEqual(t.context.match.trick.cardsPlayed, {});
-});
-
-test(`teams are created with player names in each team`, t => {
-    t.truthy(t.context.match.teams['The Knicks']);
-    t.true(_.includes(t.context.match.teams['The Knicks'].players, 'Rajens Kaspersons'));
-    t.truthy(t.context.match.teams['The Celtics']);
-    t.true(_.includes(t.context.match.teams['The Celtics'].players, 'Kevin Garnet'));
-    t.falsy(t.context.match.teams['Not a team']);
-    t.false(_.includes(t.context.match.teams['The Celtics'].players, 'Michael Jordan'));
-});
-
-test(`players are created`, t => {
-    t.truthy(t.context.match.players['Kristaps Porziņģis']);
-    t.is(t.context.match.players['Kristaps Porziņģis'].team, 'The Knicks');
-    t.truthy(t.context.match.players['Rajens Kaspersons']);
-    t.is(t.context.match.players['Rajens Kaspersons'].team, 'The Knicks');
-    t.truthy(t.context.match.players['Paul Pierce']);
-    t.is(t.context.match.players['Paul Pierce'].team, 'The Celtics');
-    t.truthy(t.context.match.players['Kevin Garnet']);
-    t.is(t.context.match.players['Kevin Garnet'].team, 'The Celtics');
-});
-
-test(`cards can be dealt to each player`, t => {
-    t.context.match.deal();
-    _.each(t.context.match.players, (player, playerName) => {
-        t.is(player.hand.length, 6);
-    });
-});
-
-test(`a card can be played by a player`, t => {
-    let [fiveDiamonds, sixClubs] = t.context.match.deck.drawSpecificCards('5 of diamonds', '6 of clubs');
-    t.context.match.players['Kristaps Porziņģis'].hand = [fiveDiamonds, sixClubs];
-    t.context.match.playCard('Kristaps Porziņģis', '5 of diamonds');
-    t.deepEqual(t.context.match.players['Kristaps Porziņģis'].hand, [sixClubs]);
-    t.deepEqual(t.context.match.trick.cardsPlayed['Kristaps Porziņģis'], fiveDiamonds);
-    t.is(t.context.match.trick.leadSuit, 'diamonds');
-    t.is(t.context.match.round.trumpSuit, 'diamonds');
-
-});
-
-test(`a bid can be made by a player`, t => {
-    let validBid = t.context.match.makeBid('Rajens Kaspersons', 2);
-    t.true(validBid);
-    t.deepEqual(t.context.match.round.bid, {
-        playerName: 'Rajens Kaspersons',
-        amount: 2
-    });
-    let invalidBid = t.context.match.makeBid('Kristaps Porziņģis', 2);
-    t.false(invalidBid);
-
-})
-
-test(`when bids are completed, the player with the winning bid is assigned as the lead player in the first trick`, t => {
-    t.context.match.makeBid('Rajens Kaspersons', 2);
-    t.context.match.completeBidding()
-    t.is(t.context.match.trick.leadPlayer, 'Rajens Kaspersons')
-})
-
-test(`a trick is completed, resetting Match().trick for the next trick`, t => {
-    let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
-    let [aceSpades, kingHearts, twoClubs, twoSpades] = t.context.match.deck.drawSpecificCards(...cardsToDraw);
-    let cardsPlayed = {
-        'Kristaps Porziņģis': aceSpades,
-        'Paul Pierce': kingHearts,
-        'Rajens Kaspersons': twoClubs,
-        'Kevin Garnet': twoSpades
+        teams: [
+            {
+                name: 'The Celtics',
+                players: [
+                    'Paul Pierce',
+                    'Kevin Garnet'
+                ]
+            },
+            {
+                name: 'The Knicks',
+                players: [
+                    'Rajens Kaspersons',
+                    'Kristaps Porzinģis'
+                ]
+            }
+        ]
     };
-    t.context.match.trick.cardsPlayed = cardsPlayed;
-    t.context.match.trick.number = 1;
-    t.context.match.trick.leadSuit = 'hearts';
-    t.context.match.round.trumpSuit = 'spades';
-    t.context.match.completeTrick()
-    t.is(t.context.match.trick.leadPlayer, 'Kristaps Porziņģis');
-    t.is(t.context.match.trick.number, 2);
-    t.deepEqual(t.context.match.trick.cardsPlayed, {});
-    t.deepEqual(t.context.match.teams['The Knicks'].cardsWon, [aceSpades, kingHearts, twoClubs, twoSpades]);
-    t.deepEqual(t.context.match.teams['The Celtics'].cardsWon, []);
-    t.deepEqual(t.context.match.teams['The Knicks'].trumpCardsWon, [aceSpades, twoSpades]);
-    t.deepEqual(t.context.match.teams['The Celtics'].trumpCardsWon, []);
+    let match = new Match(customSettings);
+    t.is(match.settings.cardsPerPlayer, 9);
+    t.is(match.settings.maxBid, 5);
+    _.each(match.teams, (team, teamName) => {
+        t.true(_.includes(['The Celtics', 'The Knicks'], teamName))
+    });
+    _.each(match.players, (player, playerName) => {
+        t.true(_.includes(['Paul Pierce', 'Kevin Garnet', 'Rajens Kaspersons', 'Kristaps Porzinģis'], playerName))
+    });
 });
 
-test(`a round is completed, resetting Match().round for the next round`, t => {
-    t.context.match.round.bid = {
-        playerName: 'Kristaps Porziņģis',
-        amount: 3
-    }
+test(`dealing results in each player being given the correct number of cards`, t => {
+    let match = new Match();
+    match.deal();
+    _.each(match.players, (player, playerName) => {
+        t.is(player.hand.length, match.settings.cardsPerPlayer)
+    });
+});
 
-    let cardsToDraw = ['ace of spades', 'king of hearts', '2 of clubs', '2 of spades'];
-    let knicksCards = t.context.deck.drawSpecificCards(...cardsToDraw);
-    let moreCardsToDraw = ['queen of clubs', '10 of clubs', '4 of diamonds', 'jack of spades'];
-    let celticsCards = t.context.deck.drawSpecificCards(...moreCardsToDraw);
+test(`a valid bid assigns a bid to a match`, t => {
+    let match = new Match();
+    match.makeBid('Kristaps Porzinģis', 2);
+    t.is(match.round.bid.amount, 2);
+    t.is(match.round.bid.playerName, 'Kristaps Porzinģis');
+});
 
-    t.context.match.teams['The Knicks'].cardsWon = knicksCards;
-    t.context.match.teams['The Knicks'].trumpCardsWon = [knicksCards[0], knicksCards[3]];
-    t.context.match.teams['The Celtics'].cardsWon = celticsCards;
-    t.context.match.teams['The Celtics'].trumpCardsWon = [celticsCards[3]];
+test(`an invalid bid amount of 1 does not assign a bid to a match`, t => {
+    let match = new Match();
+    match.makeBid('Kristaps Porzinģis', 1);
+    t.is(match.round.bid.amount, 0);
+    t.is(match.round.bid.playerName, undefined);
+});
 
-    t.context.match.completeRound()
+test(`an invalid bid amount of 2 when the current bid is 3 does not assign a bid to a match`, t => {
+    let match = new Match()
+    match.round.bid.amount = 3;
+    match.round.bid.playerName = 'Test Player';
+    match.makeBid('Kristaps Porzinģis', 2);
+    t.is(match.round.bid.amount, 3);
+    t.is(match.round.bid.playerName, 'Test Player');
+});
 
-    t.is(t.context.match.teams['The Knicks'].score, -3);
-    t.is(t.context.match.teams['The Celtics'].score, 2);
-    t.is(t.context.match.round.number, 2);
+test(`completing the bidding process assigns the bid to the current round`, t => {
+    let match = new Match();
+    match.round.bid.amount = 3;
+    match.round.bid.playerName = 'Test Player';
+    match.completeBidding();
+    t.is(match.trick.leadPlayer, 'Test Player')
+});
+
+test(`the suit of the first card played in a round is set to the round's trump suit, and the trick's lead suit`, t => {
+    let match = new Match();
+    match.players["Player 1"].hand = new Deck().cards
+    let result = match.playCard("ace of spades", "Player 1");
+    t.true(result);
+    t.is(match.round.trumpSuit, "spades");
+    t.is(match.trick.leadSuit, "spades");
+    t.is(match.trick.leadPlayer, "Player 1");
+});
+
+function getMatchWithTrickReadyToBeCompleted(trickNumber = 1) {
+    let match = new Match();
+    match.trick.number = trickNumber;
+    match.trick.leadPlayer = "Player 4";
+    match.trick.leadSuit = "spades";
+    match.round.trumpSuit = "spades";
+    match.trick.cardsPlayed["Player 1"] = getCard("ace of spades");
+    match.trick.cardsPlayed["Player 2"] = getCard("2 of spades");
+    match.trick.cardsPlayed["Player 3"] = getCard("7 of clubs");
+    match.trick.cardsPlayed["Player 4"] = getCard("10 of spades");
+    return match
+}
+
+test(`completing a trick sets up the next trick, determines the trick winner, and returns that the round is not ready to be completed`, t => {
+    let match = getMatchWithTrickReadyToBeCompleted();
+    let roundIsComplete = match.completeTrick();
+    t.is(match.trick.number, 2);
+    t.is(match.trick.leadPlayer, "Player 1");
+    t.false(roundIsComplete);
+});
+
+test(`completing a trick assigns cards won and trump cards won to the winning team`, t => {
+    let match = getMatchWithTrickReadyToBeCompleted();
+    let roundIsComplete = match.completeTrick();
+    t.is(match.teams["Team 1"].cardsWon.length, 4);
+    t.is(match.teams["Team 1"].trumpCardsWon.length, 3);
+});
+
+test(`completing the last trick does not set up the next trick and returns that the round is ready to be completed`, t => {
+    let match = getMatchWithTrickReadyToBeCompleted(6);
+    let roundIsComplete = match.completeTrick();
+    t.is(match.trick.number, 6);
+    t.is(match.trick.leadPlayer, "Player 4");
+    t.true(roundIsComplete);
 });
