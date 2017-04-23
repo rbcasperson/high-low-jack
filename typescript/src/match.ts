@@ -1,21 +1,11 @@
 import * as _ from 'lodash';
 
+import {Trick, Scores, Teams} from './types';
 import {Deck, Card} from './deck';
 import {Team} from './team';
 import {Player} from './player';
 import {isValidBid, isValidCardToPlay, determineTrickWinner, determinePointsEarnedForEachTeam} from './match/tools'
 import {shuffle, draw, removeCard} from './deck/tools'
-
-export interface CardsByPlayer {
-    [playerName: string]: Card
-}
-
-interface Trick {
-    number: number,
-    leadSuit: string,
-    cardsPlayed: CardsByPlayer,
-    leadPlayer: string
-}
 
 let defaultSettings = {
     cardsPerPlayer: 6,
@@ -55,9 +45,7 @@ export class Match {
         cardsPlayed: {},
         leadPlayer: undefined
     };
-    teams: {
-        [teamName: string]: Team 
-    } = {};
+    teams: Teams = {};
     players: {
         [playerName: string]: Player 
     } = {};
@@ -68,15 +56,15 @@ export class Match {
             this.teams[team.name] = new Team(team.name, team.players)
             _.each(team.players, playerName => {
                 this.players[playerName] = new Player(playerName, team.name)
-            })
+            });
         });
     }
 
-    get scores() {
-        let scores = {}
+    get scores(): Scores {
+        let scores: Scores = {}
         _.each(this.teams, (team, teamName) => {
             scores[teamName] = team.score
-        })
+        });
         return scores
     }
 
@@ -87,7 +75,7 @@ export class Match {
         });
     }
 
-    makeBid(playerName, bidAmount) {
+    makeBid(playerName: string, bidAmount: number) {
         if (isValidBid(bidAmount, this.round.bid, this.settings.maxBid)) {
             this.round.bid.amount = bidAmount;
             this.round.bid.playerName = playerName
@@ -98,9 +86,9 @@ export class Match {
         this.trick.leadPlayer = this.round.bid.playerName;
     }
 
-    playCard(cardName, playerName) {
+    playCard(cardName: string, playerName: string) {
         if (isValidCardToPlay(cardName, this.players[playerName].hand, this.trick.leadSuit, this.round.trumpSuit)) {
-            let cardBeingPlayed;
+            let cardBeingPlayed: Card;
             [this.players[playerName].hand, cardBeingPlayed] = removeCard(this.players[playerName].hand, cardName);
             this.trick.cardsPlayed[playerName] = cardBeingPlayed;
             if (!this.trick.leadSuit) {
@@ -158,7 +146,6 @@ export class Match {
         _.each(this.teams, (team, teamName) => {
             if (team.score >= this.settings.winningScore) {
                 matchIsOver = true;
-                //this.winningTeam = teamName;
             }
         });
         if (matchIsOver) {

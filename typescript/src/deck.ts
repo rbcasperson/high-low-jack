@@ -9,7 +9,7 @@ export class Card {
     rank: number;
     gamePoints: number;
 
-    constructor(suit, value, rank = undefined, gamePoints = undefined) {
+    constructor(suit: string, value: string, rank: number = undefined, gamePoints: number = undefined) {
         this.name = `${value} of ${suit}`
         this.suit = suit;
         this.value = value;

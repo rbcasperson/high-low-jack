@@ -1,18 +1,18 @@
 import * as _ from "lodash";
 
+import {CardsByPlayer, Bid, Teams, PointsEarned} from "../types";
 import {Team} from "../team";
 import {Player} from "../player";
 import {Card} from "../deck";
 import {hasCardWithSuit} from "../deck/tools";
-import {CardsByPlayer} from "../match";
 
 
-export function isValidBid(bidAmount: number, currentBid, maxBid: number): boolean {
+export function isValidBid(bidAmount: number, currentBid: Bid, maxBid: number): boolean {
     return bidAmount > 1 && currentBid.amount < bidAmount && bidAmount <= maxBid
 }
 
 // separate the parameters into specific things like hasTrump, hasLeadSuit , etc.
-export function isValidCardToPlay(cardName: string, hand: any[], leadSuit: string, trumpSuit: string): boolean {
+export function isValidCardToPlay(cardName: string, hand: Card[], leadSuit: string, trumpSuit: string): boolean {
     // If there is no lead suit yet, the card is trump, or the card follows the lead suit, it is valid
     if (!leadSuit || _.endsWith(cardName, trumpSuit) || _.endsWith(cardName, leadSuit)) {
         return true
@@ -21,7 +21,7 @@ export function isValidCardToPlay(cardName: string, hand: any[], leadSuit: strin
     return !hasCardWithSuit(hand, leadSuit);
 }
 
-function _determineTrickWinner(cardsPlayed, winningSuit: string): string {
+function _determineTrickWinner(cardsPlayed: CardsByPlayer, winningSuit: string): string {
     let winner = undefined;
     _.each(cardsPlayed, (cardPlayed, playerName) => {
         if (cardPlayed.suit === winningSuit) {
@@ -41,7 +41,7 @@ export function determineTrickWinner(cardsPlayed: CardsByPlayer, trumpSuit: stri
     }
 }
 
-export function determineHighPointWinner(teams): string {
+export function determineHighPointWinner(teams: Teams): string {
     let highWinnerInfo = null
     _.each(teams, (team, teamName) => {
         _.each(team.trumpCardsWon, trumpCardWon => {
@@ -56,7 +56,7 @@ export function determineHighPointWinner(teams): string {
     return highWinnerInfo.teamName
 }
 
-export function determineLowPointWinner(teams): string {
+export function determineLowPointWinner(teams: Teams): string {
     let lowWinnerInfo = null
     _.each(teams, (team, teamName) => {
         _.each(team.trumpCardsWon, trumpCardWon => {
@@ -71,7 +71,7 @@ export function determineLowPointWinner(teams): string {
     return lowWinnerInfo.teamName
 }
 
-export function determineJackPointWinner(teams) {
+export function determineJackPointWinner(teams: Teams): string | null {
     let jackWinner = null;
     _.each(teams, (team, teamName) => {
         _.each(team.trumpCardsWon, card => {
@@ -83,7 +83,7 @@ export function determineJackPointWinner(teams) {
     return jackWinner
 }
 
-export function determineGamePointWinner(teams: {[teamName: string]: Team}) {
+export function determineGamePointWinner(teams: Teams): string | null {
     let gameWinner = undefined;
     let winningGameAmount = 0;
     let currentlyTied = true;
@@ -107,8 +107,8 @@ export function determineGamePointWinner(teams: {[teamName: string]: Team}) {
     }
 }
 
-export function determinePointsEarnedForEachTeam(teams) {
-    let pointsEarned = {};
+export function determinePointsEarnedForEachTeam(teams: Teams): PointsEarned {
+    let pointsEarned: PointsEarned = {};
     _.each(teams, (team, teamName) => {
         pointsEarned[teamName] = [];
     });
