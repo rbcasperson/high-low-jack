@@ -2,23 +2,25 @@
   "name": "high-low-jack",
   "version": "0.0.1",
   "description": "An engine for the card game `high-low-jack`.",
-  "main": "index.js",
+  "main": "compiled/src/match.js",
+  "types": "compiled/src/match.js",
   "scripts": {
-    "test": "tsc && ava"
+    "test": "tsc && ava",
+    "start": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js && open high-low-jack-ui/index.html"
   },
   "dependencies": {
     "lodash": "^4.17.2",
     "typescript": "^2.2.1"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.39",
+    "@types/lodash": "^4.14.50",
     "@types/node": "^6.0.49",
     "ava": "^0.17.0",
-    "webpack": "^1.13.3"
+    "browserify": "^14.4.0"
   },
   "ava": {
     "files": [
-      "./compiled/tests/*.js"
+      "./compiled/engine/tests/*.js"
     ],
     "failFast": true,
     "tap": true

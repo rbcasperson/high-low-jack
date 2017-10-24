@@ -1,3 +1,5 @@
 node_modules
 compiled
 .vscode
+*.DS_Store
+high-low-jack-ui/bundled.js
