@@ -4,11 +4,14 @@ import {Match} from '../engine/src/match';
 import {isValidBid} from '../engine/src/match/tools';
 import {getCardIDByName} from './helpers';
 import {SeatingArrangement} from './seatingArrangement';
+import {Card} from '../engine/src/deck';
+import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT} from './constants'
 
 
 export class MatchHandler {
 
     match: Match
+
     currentDealer: string
     seatingArrangement: SeatingArrangement
     numberOfPlayers: number
@@ -48,14 +51,50 @@ export class MatchHandler {
     
             let cardsDiv = document.createElement("div")
             _.each(playerObject.hand, card => {
-                let cardDiv = document.createElement("div")
-                cardDiv.appendChild(document.createTextNode(card.name))
-                cardDiv.setAttribute("id", getCardIDByName(card))
-                cardsDiv.appendChild(cardDiv)
+                let canvas = document.createElement("canvas");
+                canvas.id = getCardIDByName(card);
+                canvas.setAttribute("width", CARD_WIDTH.toString())
+                canvas.setAttribute("height", CARD_HEIGHT.toString())
+                cardsDiv.appendChild(canvas)
             })
             playerDiv.appendChild(cardsDiv)
     
             playersDiv.appendChild(playerDiv)
+        })
+
+        let cardsImage = document.getElementById("cardsImage");
+        if (cardsImage instanceof HTMLImageElement) {
+            if (cardsImage.complete) {
+                this.drawAllCards()
+            } else {
+                cardsImage.onload = this.drawAllCards
+            }
+        }
+    }
+
+    drawAllCards() {
+        let cardsImage = document.getElementById("cardsImage");
+        _.each(document.getElementsByTagName("canvas"), canvas => {
+            let context = canvas.getContext('2d');
+            let [suitLetter, value] = _.split(canvas.id, "-")
+            if (cardsImage instanceof HTMLImageElement) {
+                // Determine where the top left corner of the correct card is in the image
+                let sX = SX_VALUES_BY_CARD_VALUE[value]
+                let sY = SY_VALUES_BY_CARD_SUIT[suitLetter]
+                // Use the correct width and height of each card to get the right part of the image
+                let sWidth = CARD_WIDTH;
+                let sHeight = CARD_HEIGHT;
+                // Always place the card in the top left of the canvas
+                let dX = 0;
+                let dY = 0;
+                // Do not adjust the displayed size of the image
+                let dWidth = CARD_WIDTH;
+                let dHeight = CARD_HEIGHT;
+
+                context.drawImage(cardsImage, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+            } else {
+                return document.createTextNode(canvas.id)
+            }
         })
     }
 
