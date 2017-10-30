@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import {Match} from '../engine/src/match';
 import {isValidBid} from '../engine/src/match/tools';
-import {getCardIDByName} from './helpers';
+import {getCardIDByName, sortHand} from './helpers';
 import {SeatingArrangement} from './seatingArrangement';
 import {Card} from '../engine/src/deck';
 import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT} from './constants'
@@ -50,7 +50,7 @@ export class MatchHandler {
             playerDiv.appendChild(h3)
     
             let cardsDiv = document.createElement("div")
-            _.each(playerObject.hand, card => {
+            _.each(sortHand(playerObject.hand), card => {
                 let canvas = document.createElement("canvas");
                 canvas.id = getCardIDByName(card);
                 canvas.setAttribute("width", CARD_WIDTH.toString())
