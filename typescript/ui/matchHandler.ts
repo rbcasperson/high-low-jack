@@ -52,8 +52,14 @@ export class MatchHandler {
         this.collectBidsManually()
     }
 
+    clearCards(): void {
+        _.each(this.tablePositions, (position, playerName) => {
+            removeChildrenFromElement(document.getElementById(`${position}Cards`))
+        })
+    }
+
     displayCards() {
-        let playersDiv = document.getElementById("players")
+        this.clearCards()
 
         _.each(this.seatingArrangement.playerOrder, playerName => {
             let playerObject = this.match.players[playerName]
