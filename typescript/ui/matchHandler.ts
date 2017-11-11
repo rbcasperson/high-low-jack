@@ -31,9 +31,7 @@ export class MatchHandler {
 
         this.tablePositions = {}
         let positionOrder = ["playerLeft", "playerBottom", "playerRight", "playerTop"]
-        _.each(_.range(this.numberOfPlayers), (i) => {
-            let playerName = this.seatingArrangement.playerOrder[i]
-            let position = positionOrder[i]
+        _.each(_.zip(this.seatingArrangement.playerOrder, positionOrder), ([playerName, position]) => {
             this.tablePositions[playerName] = position
             let text = playerName;
             if (playerName == this.currentDealer) {
