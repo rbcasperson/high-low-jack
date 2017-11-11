@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import {Match} from '../engine/src/match';
 import {isValidBid} from '../engine/src/match/tools';
-import {getCardIDByName, sortHand} from './helpers';
+import {getCardIDByName, removeChildrenFromElement, sortHand} from './helpers';
 import {SeatingArrangement} from './seatingArrangement';
 import {Card} from '../engine/src/deck';
 import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT} from './constants'
@@ -15,6 +15,9 @@ export class MatchHandler {
     currentDealer: string
     seatingArrangement: SeatingArrangement
     numberOfPlayers: number
+    tablePositions: {
+        [playerName: string]: string
+    }
 
     _currentBidder: string
     _numberOfBidsMadeThisRound: number
@@ -26,6 +29,17 @@ export class MatchHandler {
         this.seatingArrangement = new SeatingArrangement(this.match.teams)
         this.numberOfPlayers = this.seatingArrangement.playerOrder.length
 
+        this.tablePositions = {}
+        let positionOrder = ["playerLeft", "playerBottom", "playerRight", "playerTop"]
+        _.each(_.zip(this.seatingArrangement.playerOrder, positionOrder), ([playerName, position]) => {
+            this.tablePositions[playerName] = position
+            let text = playerName;
+            if (playerName == this.currentDealer) {
+                text += " (Dealer)"
+            };
+            document.getElementById(position + "Label").appendChild(document.createTextNode(text))
+        })
+
         this._currentBidder = undefined
         this._numberOfBidsMadeThisRound = undefined
     }
@@ -36,20 +50,19 @@ export class MatchHandler {
         this.collectBidsManually()
     }
 
+    clearCards(): void {
+        _.each(this.tablePositions, (position, playerName) => {
+            removeChildrenFromElement(document.getElementById(position + "Cards"))
+        })
+    }
+
     displayCards() {
-        let playersDiv = document.getElementById("players")
+        this.clearCards()
 
         _.each(this.seatingArrangement.playerOrder, playerName => {
             let playerObject = this.match.players[playerName]
-
-            let playerDiv = document.createElement("div")
     
-            let h3 = document.createElement("h3")
-            let playerNameText = document.createTextNode(playerName)
-            h3.appendChild(playerNameText)
-            playerDiv.appendChild(h3)
-    
-            let cardsDiv = document.createElement("div")
+            let cardsDiv = document.getElementById(this.tablePositions[playerName] + "Cards")
             _.each(sortHand(playerObject.hand), card => {
                 let canvas = document.createElement("canvas");
                 canvas.id = getCardIDByName(card);
@@ -57,9 +70,6 @@ export class MatchHandler {
                 canvas.setAttribute("height", CARD_HEIGHT.toString())
                 cardsDiv.appendChild(canvas)
             })
-            playerDiv.appendChild(cardsDiv)
-    
-            playersDiv.appendChild(playerDiv)
         })
 
         let cardsImage = document.getElementById("cardsImage");
@@ -133,10 +143,7 @@ export class MatchHandler {
             this._numberOfBidsMadeThisRound += 1
             this._currentBidder = this.seatingArrangement.getPlayerToTheLeftOf(playerName)
     
-            // TODO - make this into a helper function
-            while (actionDiv.hasChildNodes()) {
-                actionDiv.removeChild(actionDiv.lastChild);
-            }
+            removeChildrenFromElement(actionDiv)
 
             if (this._numberOfBidsMadeThisRound < this.numberOfPlayers) {
                 this.collectBidFrom(this._currentBidder)
