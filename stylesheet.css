@@ -1,11 +1,15 @@
 #playingRoom {
-    width: 1200px;
     margin: 0 auto;
+}
+#header {
+    margin: 0 auto;
+    width: 80%;
+    text-align: center
 }
 #left {
     position: absolute;
     float: left;
-    left: 0%
+    left: 0%;
 }
 #center {
     position: absolute;
@@ -15,10 +19,9 @@
 #right {
     position: absolute;
     float: right;
-    right: 0%
+    right: 0%;
 }
 .hand {
-    height: 96px;
     width: 432px;
 }
 #cardTable {
@@ -26,4 +29,5 @@
     width: 432px;
     background-color: black;
     margin: 0 auto;
+    border-radius: 50px;
 }
