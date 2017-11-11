@@ -120,14 +120,21 @@ export class MatchHandler {
         let h3 = document.createElement("h3")
         h3.appendChild(document.createTextNode(`Bid From ${playerName}:`))
         actionDiv.appendChild(h3)
-    
-        let validBids = _.filter(_.range(2, this.match.settings.maxBid + 1), bid => {
-            return isValidBid(bid, this.match.round.bid, this.match.settings.maxBid)
-        })
-    
+
         let select = document.createElement("select")
         select.id = "bidOptions"
-        select.options.add(new Option("pass", "pass", true, true))
+
+        let validBids;
+        // If everyone passed, force the dealer to take a 2 bid
+        if (playerName == this.currentDealer && !this.match.round.bid.playerName) {
+            validBids = [2]
+        } else {
+            validBids = _.filter(_.range(2, this.match.settings.maxBid + 1), bid => {
+                return isValidBid(bid, this.match.round.bid, this.match.settings.maxBid)
+            })
+            select.options.add(new Option("pass", "pass", true, true))
+        }
+
         _.each(validBids, validBid => {
             let bid = validBid.toString()
             select.options.add(new Option(bid, bid))
