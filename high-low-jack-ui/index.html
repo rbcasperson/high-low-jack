@@ -1,10 +1,54 @@
 <!DOCTYPE html>
 <html>
-    <div id="notDisplayed" style="display:none;">
-        <img id="cardsImage" src="./static/cards.png">
-    </div>
-    <h1>High Low Jack - Demo</h1>
-    <div id="action"></div>
-    <div id="players"></div>
+    <head>
+        <link rel="stylesheet" href="./stylesheet.css">
+    </head>
+    <body>
+        <div id="notDisplayed" style="display:none;">
+            <img id="cardsImage" src="./static/cards.png">
+        </div>
+        <h1>High Low Jack - Demo</h1>
+        <div id="action"></div>
+        <div id="players"></div>
+        <table id="playingRoom">
+            <tr>
+                <td></td>
+                <td>
+                    <div id="playerTop" class="hand">
+                        <h3 id="playerTopLabel"></h3>
+                        <h3 id="playerTopCards"></h3>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="playerLeft" class="hand">
+                        <h3 id="playerLeftLabel"></h3>
+                        <h3 id="playerLeftCards"></h3>
+                    </div>
+                </td>
+                <td>
+                    <div id="cardTable"></div>
+                </td>
+                <td>
+                    <div id="playerRight" class="hand">
+                        <h3 id="playerRightLabel"></h3>
+                        <h3 id="playerRightCards"></h3>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div id=playerBottom class="hand">
+                        <h3 id="playerBottomLabel"></h3>
+                        <h3 id="playerBottomCards"></h3>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+        </table></body>
+
     <script src="bundled.js"></script>
 </html>

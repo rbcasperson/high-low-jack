@@ -1,0 +1,29 @@
+#playingRoom {
+    width: 1200px;
+    margin: 0 auto;
+}
+#left {
+    position: absolute;
+    float: left;
+    left: 0%
+}
+#center {
+    position: absolute;
+    left: 50%;
+    right: 50%;
+}
+#right {
+    position: absolute;
+    float: right;
+    right: 0%
+}
+.hand {
+    height: 96px;
+    width: 432px;
+}
+#cardTable {
+    height: 240px;
+    width: 432px;
+    background-color: black;
+    margin: 0 auto;
+}
