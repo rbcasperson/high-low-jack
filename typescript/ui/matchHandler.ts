@@ -54,7 +54,7 @@ export class MatchHandler {
 
     clearCards(): void {
         _.each(this.tablePositions, (position, playerName) => {
-            removeChildrenFromElement(document.getElementById(`${position}Cards`))
+            removeChildrenFromElement(document.getElementById(position + "Cards"))
         })
     }
 
