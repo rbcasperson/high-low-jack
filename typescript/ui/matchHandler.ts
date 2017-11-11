@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import {Match} from '../engine/src/match';
 import {isValidBid} from '../engine/src/match/tools';
-import {getCardIDByName, sortHand} from './helpers';
+import {getCardIDByName, removeChildrenFromElement, sortHand} from './helpers';
 import {SeatingArrangement} from './seatingArrangement';
 import {Card} from '../engine/src/deck';
 import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT} from './constants'
@@ -133,10 +133,7 @@ export class MatchHandler {
             this._numberOfBidsMadeThisRound += 1
             this._currentBidder = this.seatingArrangement.getPlayerToTheLeftOf(playerName)
     
-            // TODO - make this into a helper function
-            while (actionDiv.hasChildNodes()) {
-                actionDiv.removeChild(actionDiv.lastChild);
-            }
+            removeChildrenFromElement(actionDiv)
 
             if (this._numberOfBidsMadeThisRound < this.numberOfPlayers) {
                 this.collectBidFrom(this._currentBidder)

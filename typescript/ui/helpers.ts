@@ -72,3 +72,9 @@ export function sortHand(hand: Card[]): Card[] {
         }
     }
 }
+
+export function removeChildrenFromElement(element) {
+    while (element.hasChildNodes()) {
+        element.removeChild(element.lastChild);
+    }
+}
