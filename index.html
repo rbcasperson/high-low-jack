@@ -9,6 +9,7 @@
         </div>
         <div id="header">
             <h1>High Low Jack - Demo</h1>
+            <div id="scores"></div>
             <div id="action"></div>
         </div>
         <hr></hr>
@@ -18,7 +19,7 @@
                 <td>
                     <div id="playerTop" class="hand">
                         <h3 id="playerTopLabel"></h3>
-                        <h3 id="playerTopCards"></h3>
+                        <div id="playerTopCards"></div>
                     </div>
                 </td>
                 <td></td>
@@ -27,16 +28,21 @@
                 <td>
                     <div id="playerLeft" class="hand">
                         <h3 id="playerLeftLabel"></h3>
-                        <h3 id="playerLeftCards"></h3>
+                        <div id="playerLeftCards"></div>
                     </div>
                 </td>
                 <td>
-                    <div id="cardTable"></div>
+                    <div id="cardTable">
+                        <div id="playerTopPlayedCard"></div>
+                        <div id="playerRightPlayedCard"></div>
+                        <div id="playerBottomPlayedCard"></div>
+                        <div id="playerLeftPlayedCard"></div>
+                    </div>
                 </td>
                 <td>
                     <div id="playerRight" class="hand">
                         <h3 id="playerRightLabel"></h3>
-                        <h3 id="playerRightCards"></h3>
+                        <div id="playerRightCards"></div>
                     </div>
                 </td>
             </tr>
@@ -45,7 +51,7 @@
                 <td>
                     <div id=playerBottom class="hand">
                         <h3 id="playerBottomLabel"></h3>
-                        <h3 id="playerBottomCards"></h3>
+                        <div id="playerBottomCards"></div>
                     </div>
                 </td>
                 <td></td>
