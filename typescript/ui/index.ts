@@ -5,6 +5,7 @@ import {MatchHandler} from './matchHandler';
 let settings = {
     cardsPerPlayer: 6,
     maxBid: 4,
+    winningScore: 11,
     teams: [
         {
             name: "Team A",
@@ -20,4 +21,4 @@ let settings = {
 let match = new Match(settings)
 let matchHandler = new MatchHandler(match)
 
-matchHandler.start()
+matchHandler.startRound()
