@@ -101,7 +101,6 @@ export class Match {
             };
             return true
         } else {
-            console.log(`${playerName} is not allowed to play the ${cardName} right now.`);
             return false
         };
     }
