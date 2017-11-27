@@ -69,6 +69,7 @@ export class Match {
     }
 
     deal() {
+        this.deck = new Deck()
         this.deck.cards = shuffle(this.deck.cards);
         _.each(this.players, (player, playerName) => {
             [this.deck, player.hand] = draw(this.deck, this.settings.cardsPerPlayer);
