@@ -123,6 +123,12 @@ export class Match {
             this.trick.leadSuit = undefined;
             return false
         } else {
+            this.trick = {
+                number: 1,
+                leadSuit: undefined,
+                cardsPlayed: {},
+                leadPlayer: undefined
+            }
             return true
         }
     }
