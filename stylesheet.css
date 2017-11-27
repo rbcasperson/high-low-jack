@@ -30,4 +30,47 @@
     background-color: black;
     margin: 0 auto;
     border-radius: 50px;
+    position: relative;
+    text-align: center;
 }
+#playerTopPlayedCard {
+    height: 96px;
+    width: 72px;
+    top: 5px;
+    left: 180px;
+    position: absolute;
+}
+#playerRightPlayedCard {
+    height: 96px;
+    width: 72px;
+    position: absolute;
+    right: 5px;
+    top: 72px;
+}
+#playerBottomPlayedCard {
+    height: 96px;
+    width: 72px;
+    position: absolute;
+    left: 180px;
+    bottom: 5px;
+}
+#playerLeftPlayedCard {
+    height: 96px;
+    width: 72px;
+    position: absolute;
+    left: 5px;
+    top: 72px;
+}
+#playerLeftCards {
+    float: right;
+}
+#playerLeftLabel {
+    text-align: right;
+}
+#playerTopLabel {
+    text-align: center;
+}
+#playerBottomLabel {
+    text-align: center;
+}
+
