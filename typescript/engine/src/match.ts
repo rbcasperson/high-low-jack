@@ -69,6 +69,7 @@ export class Match {
     }
 
     deal() {
+        this.deck = new Deck()
         this.deck.cards = shuffle(this.deck.cards);
         _.each(this.players, (player, playerName) => {
             [this.deck, player.hand] = draw(this.deck, this.settings.cardsPerPlayer);
@@ -100,7 +101,6 @@ export class Match {
             };
             return true
         } else {
-            console.log(`${playerName} is not allowed to play the ${cardName} right now.`);
             return false
         };
     }
@@ -123,6 +123,12 @@ export class Match {
             this.trick.leadSuit = undefined;
             return false
         } else {
+            this.trick = {
+                number: 1,
+                leadSuit: undefined,
+                cardsPlayed: {},
+                leadPlayer: undefined
+            }
             return true
         }
     }

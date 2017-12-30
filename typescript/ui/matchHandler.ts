@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import {Match} from '../engine/src/match';
 import {isValidBid} from '../engine/src/match/tools';
-import {getCardIDByName, removeChildrenFromElement, sortHand} from './helpers';
+import {getCardIDByName, getCardNameByID, removeChildrenFromElement, sortHand} from './helpers';
 import {SeatingArrangement} from './seatingArrangement';
 import {Card} from '../engine/src/deck';
 import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT} from './constants'
@@ -33,27 +33,42 @@ export class MatchHandler {
         let positionOrder = ["playerLeft", "playerBottom", "playerRight", "playerTop"]
         _.each(_.zip(this.seatingArrangement.playerOrder, positionOrder), ([playerName, position]) => {
             this.tablePositions[playerName] = position
-            let text = playerName;
-            if (playerName == this.currentDealer) {
-                text += " (Dealer)"
-            };
-            document.getElementById(position + "Label").appendChild(document.createTextNode(text))
         })
 
         this._currentBidder = undefined
         this._numberOfBidsMadeThisRound = undefined
     }
 
-    start() {
+    displayPlayers() {
+        _.each(this.tablePositions, (position, playerName) => {
+            let text = playerName;
+            if (playerName == this.currentDealer) {
+                text += " (Dealer)"
+            };
+            document.getElementById(position + "Label").innerHTML = text
+        })
+    }
+
+    startRound() {
         this.match.deal()
+        _.each(this.match.players, player => {
+            player.hand = sortHand(player.hand)
+        })
+        this.displayScores()
+        this.displayPlayers()
         this.displayCards()
         this.collectBidsManually()
     }
 
-    clearCards(): void {
+    clearCards() {
         _.each(this.tablePositions, (position, playerName) => {
             removeChildrenFromElement(document.getElementById(position + "Cards"))
+            removeChildrenFromElement(document.getElementById(position + "PlayedCard"))
         })
+    }
+
+    displayScores() {
+        document.getElementById("scores").innerHTML = `Team A: ${this.match.teams["Team A"].score} - Team B: ${this.match.teams["Team B"].score}`
     }
 
     displayCards() {
@@ -63,13 +78,23 @@ export class MatchHandler {
             let playerObject = this.match.players[playerName]
     
             let cardsDiv = document.getElementById(this.tablePositions[playerName] + "Cards")
-            _.each(sortHand(playerObject.hand), card => {
+            _.each(playerObject.hand, card => {
                 let canvas = document.createElement("canvas");
                 canvas.id = getCardIDByName(card);
                 canvas.setAttribute("width", CARD_WIDTH.toString())
                 canvas.setAttribute("height", CARD_HEIGHT.toString())
                 cardsDiv.appendChild(canvas)
             })
+        })
+
+        _.each(this.match.trick.cardsPlayed, (card, playerName) => {
+            let placeForCardOnTableDiv = document.getElementById(this.tablePositions[playerName] + "PlayedCard")
+            removeChildrenFromElement(placeForCardOnTableDiv)
+            let canvas = document.createElement("canvas");
+            canvas.id = getCardIDByName(card);
+            canvas.setAttribute("width", CARD_WIDTH.toString())
+            canvas.setAttribute("height", CARD_HEIGHT.toString())
+            placeForCardOnTableDiv.appendChild(canvas)
         })
 
         let cardsImage = document.getElementById("cardsImage");
@@ -114,12 +139,24 @@ export class MatchHandler {
         this.collectBidFrom(this._currentBidder)
     }
 
-    collectBidFrom(playerName: string) {
+    clearActionDiv() {
+        removeChildrenFromElement(document.getElementById("action"))
+    }
+
+    addTextToActionDiv(text: string) {
         let actionDiv = document.getElementById("action")
-        
         let h3 = document.createElement("h3")
-        h3.appendChild(document.createTextNode(`Bid From ${playerName}:`))
+        h3.appendChild(document.createTextNode(text))
         actionDiv.appendChild(h3)
+    }
+
+    addElementToActionDiv(element) {
+        document.getElementById("action").appendChild(element)
+    }
+
+    collectBidFrom(playerName: string) {
+        this.clearActionDiv()
+        this.addTextToActionDiv(`Bid From ${playerName}:`)
 
         let select = document.createElement("select")
         select.id = "bidOptions"
@@ -139,18 +176,19 @@ export class MatchHandler {
             let bid = validBid.toString()
             select.options.add(new Option(bid, bid))
         })
-        actionDiv.appendChild(select)
+        this.addElementToActionDiv(select)
     
         let makeBidButton = document.createElement("button")
         makeBidButton.innerHTML = "Make Bid"
-        makeBidButton.addEventListener("click", () => {
+        makeBidButton.onclick = () => {
             let bidValue = select.options[select.selectedIndex].value;
+
             this.match.makeBid(playerName, parseInt(bidValue))
 
             this._numberOfBidsMadeThisRound += 1
             this._currentBidder = this.seatingArrangement.getPlayerToTheLeftOf(playerName)
     
-            removeChildrenFromElement(actionDiv)
+            this.clearActionDiv()
 
             if (this._numberOfBidsMadeThisRound < this.numberOfPlayers) {
                 this.collectBidFrom(this._currentBidder)
@@ -158,10 +196,60 @@ export class MatchHandler {
                 this.match.completeBidding()
                 let h4 = document.createElement("h4")
                 h4.innerHTML = `${this.match.round.bid.playerName} won the bidding with a bid of ${this.match.round.bid.amount}`
-                actionDiv.appendChild(h4)
+                this.addElementToActionDiv(h4)
+
+                let beginPlayingButton = document.createElement("button")
+                beginPlayingButton.innerHTML = "Begin Playing"
+                beginPlayingButton.onclick = () => {
+                    this.requestCardFrom(this.match.round.bid.playerName)
+                }
+                document.getElementById("action").appendChild(beginPlayingButton)
             }
     
+        }
+        this.addElementToActionDiv(makeBidButton)
+    }
+
+    requestCardFrom(playerName: string) {
+        this.displayCards()
+
+        this.clearActionDiv()
+        this.addTextToActionDiv(`${playerName}, please select a card.`)
+
+        let cardsDiv = document.getElementById(this.tablePositions[playerName] + "Cards")
+        _.each(cardsDiv.getElementsByTagName("canvas"), cardCanvas => {
+            cardCanvas.onclick = () => {
+                let cardName = getCardNameByID(cardCanvas.id)
+                let cardPlayed = this.match.playCard(cardName, playerName)
+                if (!cardPlayed) {
+                    alert(`${playerName} cannot play the ${cardName}. Try again.`)
+                    this.requestCardFrom(playerName)
+                } else {
+                    this.displayCards()
+                    if (_.size(this.match.trick.cardsPlayed) == this.numberOfPlayers) {
+                        let roundComplete = this.match.completeTrick()
+                        if (roundComplete) {
+                            let matchIsOver = this.match.completeRound()
+                            if (matchIsOver) {
+                                this.clearActionDiv()
+                                this.addTextToActionDiv("Match Complete!")
+                                this.addTextToActionDiv("Final Scores:")
+                                _.each(this.match.teams, team => {
+                                    this.addTextToActionDiv(`${team.name}: ${team.score}`)
+                                })
+                            } else {
+                                this.currentDealer = this.seatingArrangement.getPlayerToTheLeftOf(this.currentDealer)
+                                this.startRound()
+                            }
+                        } else {
+                            this.requestCardFrom(this.match.trick.leadPlayer)
+                        }
+                    } else {
+                        this.requestCardFrom(this.seatingArrangement.getPlayerToTheLeftOf(playerName))
+                    }
+                }
+            }
         })
-        actionDiv.appendChild(makeBidButton)
+
     }
 }

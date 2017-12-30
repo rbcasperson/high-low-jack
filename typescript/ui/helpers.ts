@@ -14,6 +14,29 @@ export function getCardIDByName(card) {
     return `${suitLetter}-${value}`
 }
 
+let suitsByFirstLetter = {
+    "h": "hearts",
+    "d": "diamonds",
+    "c": "clubs",
+    "s": "spades"
+}
+
+let valuesByFirstLetter = {
+    "j": "jack",
+    "q": "queen",
+    "k": "king",
+    "a": "ace"
+}
+
+export function getCardNameByID(id) {
+    let [suitLetter, value] = _.split(id, "-")
+    let suit = suitsByFirstLetter[suitLetter]
+    if (_.toInteger(value) == 0) {
+        value = valuesByFirstLetter[value]
+    }
+    return `${value} of ${suit}`
+}
+
 function colorOfSuit(suit: string) {
     if (suit == "hearts" || suit == "diamonds") {
         return "red"
