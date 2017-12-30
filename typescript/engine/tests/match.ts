@@ -134,10 +134,10 @@ test(`completing a trick assigns cards won and trump cards won to the winning te
     t.is(match.teams["Team 1"].trumpCardsWon.length, 3);
 });
 
-test(`completing the last trick does not set up the next trick and returns that the round is ready to be completed`, t => {
+test(`completing the last trick resets the trick values and returns that the round is ready to be completed`, t => {
     let match = getMatchWithTrickReadyToBeCompleted(6);
     let roundIsComplete = match.completeTrick();
-    t.is(match.trick.number, 6);
-    t.is(match.trick.leadPlayer, "Player 4");
+    t.is(match.trick.number, 1);
+    t.falsy(match.trick.leadPlayer);
     t.true(roundIsComplete);
 });
