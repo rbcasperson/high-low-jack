@@ -48,7 +48,7 @@ test(`the trick winner can be determined  - scenario 3`, t => {
     t.is(winningPlayerName, "Player 1");
 });
 
-test(`the trick winner can be determined  - scenario 3`, t => {
+test(`the trick winner can be determined  - scenario 4`, t => {
     let cardsPlayed = {
         "Player 1": getCard("2 of diamonds"),
         "Player 2": getCard("10 of diamonds"),
