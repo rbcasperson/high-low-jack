@@ -17,7 +17,7 @@ export class SeatingArrangement {
     constructor(teams) {
         this.teams = _.shuffle(teams)
 
-        let allPlayersInTeams = []
+        let allPlayersInTeams: string[][] = []
         _.each(this.teams, team => {
             allPlayersInTeams.push(_.shuffle(team.players))
         })

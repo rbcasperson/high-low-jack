@@ -46,7 +46,7 @@ function colorOfSuit(suit: string) {
 }
 
 export function sortHand(hand: Card[]): Card[] {
-    let cardsBySuit = {}
+    let cardsBySuit:{[suit: string]: Card[]} = {}
     _.each(hand, card => {
         if (card.suit in cardsBySuit) {
             cardsBySuit[card.suit].push(card)
