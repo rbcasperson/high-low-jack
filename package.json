@@ -5,7 +5,7 @@
   "main": "compiled/src/match.js",
   "types": "compiled/src/match.js",
   "scripts": {
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --quiet",
     "test": "tsc && ava",
     "start": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js && open high-low-jack-ui/index.html"
   },
