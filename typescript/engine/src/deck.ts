@@ -3,13 +3,13 @@ import * as _ from 'lodash';
 import {SUITS, VALUES, VALUE_RANKS, GAME_POINT_VALUES} from './deck/constants'
 
 export class Card {
-    name: string;
-    suit: string;
-    value: string;
-    rank: number;
-    gamePoints: number;
+    public name: string;
+    public suit: string;
+    public value: string;
+    public rank: number;
+    public gamePoints: number;
 
-    constructor(suit: string, value: string, rank: number = undefined, gamePoints: number = undefined) {
+    public constructor(suit: string, value: string, rank: number = undefined, gamePoints: number = undefined) {
         this.name = `${value} of ${suit}`
         this.suit = suit;
         this.value = value;
@@ -19,10 +19,10 @@ export class Card {
 };
 
 export class Deck {
-    cards: Card[] = [];
-    cardsInPlay: Card[] = [];
+    public cards: Card[] = [];
+    public cardsInPlay: Card[] = [];
 
-    constructor(
+    public constructor(
         suits = SUITS, 
         values = VALUES, 
         valueRanks = VALUE_RANKS, 

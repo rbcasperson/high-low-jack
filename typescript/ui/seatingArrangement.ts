@@ -5,16 +5,16 @@ import {Team} from '../engine/src/team'
 
 export class SeatingArrangement {
 
-    teams: Team[]
-    playerOrder: string[]
-    playerInfo: {
+    public teams: Team[]
+    public playerOrder: string[]
+    public playerInfo: {
         [playerName: string]: {
-            playerToLeft: string,
-            playerToRight: string
-        }
+            playerToLeft: string;
+            playerToRight: string;
+        };
     }
 
-    constructor(teams) {
+    public constructor(teams) {
         this.teams = _.shuffle(teams)
 
         let allPlayersInTeams: string[][] = []
@@ -47,11 +47,11 @@ export class SeatingArrangement {
         })
     }
 
-    getPlayerToTheLeftOf(player: string): string {
+    public getPlayerToTheLeftOf(player: string): string {
         return this.playerInfo[player].playerToLeft
     }
 
-    getPlayerToTheRightOf(player: string): string {
+    public getPlayerToTheRightOf(player: string): string {
         return this.playerInfo[player].playerToRight
     }
 }

@@ -29,9 +29,9 @@ let defaultSettings = {
 };
 
 export class Match {
-    settings;
-    deck = new Deck();
-    round = {
+    public settings;
+    public deck = new Deck();
+    public round = {
         number: 1,
         trumpSuit: undefined,
         bid: {
@@ -39,18 +39,18 @@ export class Match {
             amount: 0
         }
     };
-    trick: Trick = {
+    public trick: Trick = {
         number: 1,
         leadSuit: undefined,
         cardsPlayed: {},
         leadPlayer: undefined
     };
-    teams: Teams = {};
-    players: {
-        [playerName: string]: Player 
+    public teams: Teams = {};
+    public players: {
+        [playerName: string]: Player;
     } = {};
 
-    constructor(settings = defaultSettings) {
+    public constructor(settings = defaultSettings) {
         this.settings = settings;
         _.each(settings.teams, team => {
             this.teams[team.name] = new Team(team.name, team.players)
@@ -60,7 +60,7 @@ export class Match {
         });
     }
 
-    get scores(): Scores {
+    public get scores(): Scores {
         let scores: Scores = {}
         _.each(this.teams, (team, teamName) => {
             scores[teamName] = team.score
@@ -68,7 +68,7 @@ export class Match {
         return scores
     }
 
-    deal() {
+    public deal() {
         this.deck = new Deck()
         this.deck.cards = shuffle(this.deck.cards);
         _.each(this.players, (player, playerName) => {
@@ -76,18 +76,18 @@ export class Match {
         });
     }
 
-    makeBid(playerName: string, bidAmount: number) {
+    public makeBid(playerName: string, bidAmount: number) {
         if (isValidBid(bidAmount, this.round.bid, this.settings.maxBid)) {
             this.round.bid.amount = bidAmount;
             this.round.bid.playerName = playerName
         };
     }
 
-    completeBidding() {
+    public completeBidding() {
         this.trick.leadPlayer = this.round.bid.playerName;
     }
 
-    playCard(cardName: string, playerName: string) {
+    public playCard(cardName: string, playerName: string) {
         if (isValidCardToPlay(cardName, this.players[playerName].hand, this.trick.leadSuit, this.round.trumpSuit)) {
             let cardBeingPlayed: Card;
             [this.players[playerName].hand, cardBeingPlayed] = removeCard(this.players[playerName].hand, cardName);
@@ -105,7 +105,7 @@ export class Match {
         };
     }
 
-    completeTrick() {
+    public completeTrick() {
         let winningPlayerName = determineTrickWinner(this.trick.cardsPlayed, this.round.trumpSuit, this.trick.leadSuit);
         let winningTeam = this.players[winningPlayerName].team;
 
@@ -133,7 +133,7 @@ export class Match {
         }
     }
 
-    completeRound() {
+    public completeRound() {
         // 1. Determine how many points each team earned
         let pointsEarned = determinePointsEarnedForEachTeam(this.teams);
         // 2. Check if the bidding team made the bid
