@@ -5,6 +5,7 @@
   "main": "compiled/src/match.js",
   "types": "compiled/src/match.js",
   "scripts": {
+    "lint": "eslint . --ext .ts --quiet",
     "test": "tsc && ava",
     "start": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js && open high-low-jack-ui/index.html"
   },
@@ -15,8 +16,11 @@
   "devDependencies": {
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.13.0",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "ava": "^1.4.1",
-    "browserify": "^16.2.3"
+    "browserify": "^16.2.3",
+    "eslint": "^5.16.0"
   },
   "ava": {
     "files": [

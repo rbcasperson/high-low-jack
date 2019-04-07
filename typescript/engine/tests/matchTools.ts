@@ -3,9 +3,11 @@ import test from 'ava';
 
 import {getCard} from './match'
 import {Match} from '../src/match'
-import {determineTrickWinner, isValidCardToPlay, determineHighPointWinner,
-        determineLowPointWinner, determineJackPointWinner, determineGamePointWinner,
-        determinePointsEarnedForEachTeam} from '../src/match/tools'
+import {
+    determineTrickWinner, isValidCardToPlay, determineHighPointWinner,
+    determineLowPointWinner, determineJackPointWinner, determineGamePointWinner,
+    determinePointsEarnedForEachTeam
+} from '../src/match/tools'
 
 // determineTrickWinner tests
 

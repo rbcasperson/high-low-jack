@@ -10,19 +10,19 @@ import {CARD_HEIGHT, CARD_WIDTH, SX_VALUES_BY_CARD_VALUE, SY_VALUES_BY_CARD_SUIT
 
 export class MatchHandler {
 
-    match: Match
+    public match: Match
 
-    currentDealer: string
-    seatingArrangement: SeatingArrangement
-    numberOfPlayers: number
-    tablePositions: {
-        [playerName: string]: string
+    public currentDealer: string
+    public seatingArrangement: SeatingArrangement
+    public numberOfPlayers: number
+    public tablePositions: {
+        [playerName: string]: string;
     }
 
-    _currentBidder: string
-    _numberOfBidsMadeThisRound: number
+    private _currentBidder: string
+    private _numberOfBidsMadeThisRound: number
 
-    constructor(match: Match) {
+    public constructor(match: Match) {
         this.match = match
 
         this.currentDealer = _.sample(this.match.players).name
@@ -39,7 +39,7 @@ export class MatchHandler {
         this._numberOfBidsMadeThisRound = undefined
     }
 
-    displayPlayers() {
+    public displayPlayers() {
         _.each(this.tablePositions, (position, playerName) => {
             let text = playerName;
             if (playerName == this.currentDealer) {
@@ -49,7 +49,7 @@ export class MatchHandler {
         })
     }
 
-    startRound() {
+    public startRound() {
         this.match.deal()
         _.each(this.match.players, player => {
             player.hand = sortHand(player.hand)
@@ -60,18 +60,18 @@ export class MatchHandler {
         this.collectBidsManually()
     }
 
-    clearCards() {
+    public clearCards() {
         _.each(this.tablePositions, (position, playerName) => {
             removeChildrenFromElement(document.getElementById(position + "Cards"))
             removeChildrenFromElement(document.getElementById(position + "PlayedCard"))
         })
     }
 
-    displayScores() {
+    public displayScores() {
         document.getElementById("scores").innerHTML = `Team A: ${this.match.teams["Team A"].score} - Team B: ${this.match.teams["Team B"].score}`
     }
 
-    displayCards() {
+    public displayCards() {
         this.clearCards()
 
         _.each(this.seatingArrangement.playerOrder, playerName => {
@@ -107,7 +107,7 @@ export class MatchHandler {
         }
     }
 
-    drawAllCards() {
+    public drawAllCards() {
         let cardsImage = document.getElementById("cardsImage");
         _.each(document.getElementsByTagName("canvas"), canvas => {
             let context = canvas.getContext('2d');
@@ -133,28 +133,28 @@ export class MatchHandler {
         })
     }
 
-    collectBidsManually() {
+    public collectBidsManually() {
         this._numberOfBidsMadeThisRound = 0
         this._currentBidder = this.seatingArrangement.getPlayerToTheLeftOf(this.currentDealer)
         this.collectBidFrom(this._currentBidder)
     }
 
-    clearActionDiv() {
+    public clearActionDiv() {
         removeChildrenFromElement(document.getElementById("action"))
     }
 
-    addTextToActionDiv(text: string) {
+    public addTextToActionDiv(text: string) {
         let actionDiv = document.getElementById("action")
         let h3 = document.createElement("h3")
         h3.appendChild(document.createTextNode(text))
         actionDiv.appendChild(h3)
     }
 
-    addElementToActionDiv(element) {
+    public addElementToActionDiv(element) {
         document.getElementById("action").appendChild(element)
     }
 
-    collectBidFrom(playerName: string) {
+    public collectBidFrom(playerName: string) {
         this.clearActionDiv()
         this.addTextToActionDiv(`Bid From ${playerName}:`)
 
@@ -210,7 +210,7 @@ export class MatchHandler {
         this.addElementToActionDiv(makeBidButton)
     }
 
-    requestCardFrom(playerName: string) {
+    public requestCardFrom(playerName: string) {
         this.displayCards()
 
         this.clearActionDiv()
