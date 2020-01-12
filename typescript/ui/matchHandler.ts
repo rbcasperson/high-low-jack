@@ -86,9 +86,9 @@ export class MatchHandler {
   }
 
   public displayScores() {
-    document.getElementById("scores").innerHTML = `Team A: ${
-      this.match.teams["Team A"].score
-    } - Team B: ${this.match.teams["Team B"].score}`;
+    document.getElementById(
+      "scores"
+    ).innerHTML = `Team A: ${this.match.teams["Team A"].score} - Team B: ${this.match.teams["Team B"].score}`;
   }
 
   public displayCards() {
@@ -237,9 +237,7 @@ export class MatchHandler {
       } else {
         this.match.completeBidding();
         let h4 = document.createElement("h4");
-        h4.innerHTML = `${
-          this.match.round.bid.playerName
-        } won the bidding with a bid of ${this.match.round.bid.amount}`;
+        h4.innerHTML = `${this.match.round.bid.playerName} won the bidding with a bid of ${this.match.round.bid.amount}`;
         this.addElementToActionDiv(h4);
 
         let beginPlayingButton = document.createElement("button");
