@@ -5,25 +5,26 @@
   "main": "compiled/src/match.js",
   "types": "compiled/src/match.js",
   "scripts": {
+    "build": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js",
     "lint": "eslint . --ext .ts --quiet",
     "test": "tsc && ava",
-    "start": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js && open high-low-jack-ui/index.html"
+    "start": "npm run build && open high-low-jack-ui/index.html"
   },
   "dependencies": {
-    "lodash": "^4.17.11",
-    "typescript": "^3.4.2"
+    "lodash": "^4.17.20",
+    "typescript": "^4.1.3"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.149",
-    "@types/node": "^11.15.4",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^11.15.39",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
-    "ava": "^2.4.0",
-    "browserify": "^16.5.0",
+    "ava": "^3.14.0",
+    "browserify": "^16.5.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "prettier": "^1.19.1"
+    "eslint-plugin-prettier": "^3.2.0",
+    "prettier": "^2.2.1"
   },
   "ava": {
     "files": [
