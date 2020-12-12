@@ -1,0 +1,13 @@
+version: 2.1
+
+jobs:
+  "Unit Tests":
+    executor: default
+    steps:
+      - run: npm install
+      - run: npm test
+
+
+executors:
+  default:
+    machine: ubuntu-1604:201903-01
