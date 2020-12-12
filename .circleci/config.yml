@@ -1,5 +1,10 @@
 version: 2.1
 
+workflows:
+    main:
+      jobs:
+        - Unit Tests
+
 jobs:
   "Unit Tests":
     executor: default
