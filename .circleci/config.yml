@@ -16,4 +16,4 @@ jobs:
 executors:
   default:
     docker: 
-      image: node:15.4
+      - image: node:15.4
