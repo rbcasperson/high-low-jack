@@ -1,19 +1,9 @@
+orbs:
+  node: circleci/node4.0.0
+
 version: 2.1
 
 workflows:
-    main:
-      jobs:
-        - Unit Tests
-
-jobs:
-  "Unit Tests":
-    executor: default
-    steps:
-      - run: npm install
-      - run: npm test
-
-
-executors:
-  default:
-    docker: 
-      - image: node:15.4
+  app-tests:
+    jobs:
+      - node/test
