@@ -1,9 +1,9 @@
 {
   "name": "high-low-jack",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "An engine for the card game `high-low-jack`.",
-  "main": "compiled/src/match.js",
-  "types": "compiled/src/match.js",
+  "main": "compiled/engine/src/match.js",
+  "types": "compiled/engine/src/match.d.ts",
   "scripts": {
     "build": "tsc && browserify compiled/ui/index.js -o high-low-jack-ui/bundled.js",
     "lint": "eslint . --ext .ts --quiet",
