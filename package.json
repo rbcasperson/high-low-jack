@@ -1,6 +1,6 @@
 {
   "name": "high-low-jack",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "An engine for the card game `high-low-jack`.",
   "main": "compiled/src/match.js",
   "types": "compiled/src/index.d.ts",
