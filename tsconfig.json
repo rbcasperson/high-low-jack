@@ -4,7 +4,7 @@
         "target": "es2015",
         "outDir": "compiled",
         "noImplicitAny": false,
-        "removeComments": true
-    },
-    "declaration": true
+        "removeComments": true,
+        "declaration": true
+    }
 }
